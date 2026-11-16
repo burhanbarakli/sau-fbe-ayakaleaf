@@ -152,6 +152,79 @@ izin verir (`127.0.0.1`). Ağdaki başka bilgisayarların erişmesi için `confi
 `OVERLEAF_LISTEN_IP` ve `config/variables.env`'de `OVERLEAF_SITE_URL` değiştirilmeli, ağ/güvenlik duvarı ve
 HTTPS ayarlanmalıdır; bkz. [AyakaLeaf belgeleri](https://ayakaleaf-pro.ayaka.space/on-premises/).
 
+## Kaynaklar, Zotero ve Mendeley
+
+Şablonda kaynakça iki yolla yazılır (ayrıntılar ve örnekler [şablon kılavuzunda](https://burhanbarakli.github.io/sau-fbe-doktora-latex-sablonu/#kaynaklar)):
+
+1. **Elle (varsayılan):** `bolumler/kaynaklar.tex`'e her kaynak için `\kaynak{...}` (APA) ya da
+   `\begin{kaynaklistesi} \item ... \end{kaynaklistesi}` (numaralı [1]); metin içi atıflar da elle yazılır:
+   `(Baran, 2003)`, `[1]`.
+2. **`.bib` dosyasından:** kaynak listesi ve atıflar Zotero, Mendeley ya da JabRef'ten gelen `.bib` dosyasından
+   üretilir; sıralama, "ve ark." ve kılavuz biçimi kendiliğinden olur. Projede:
+   - `tez.tex`'in başındaki `\input{bib-ayar}` ve `\addbibresource{zotero.bib}` satırlarının `%` işaretini silin
+     (numaralı düzen için `\newcommand\kaynakduzeni{numarali}` satırını da açın),
+   - `bolumler/kaynaklar.tex`'in içeriğini `\bolumsuz{KAYNAKLAR}` ve `\printbibliography[heading=none]` yapın,
+   - metinde `\textcite{anahtar}` → Baran (2003), `\parencite{anahtar}` → (Baran, 2003), numaralı düzende
+     `\cite{anahtar}` → [1] yazın ve **Derle**'ye basın (biber kendiliğinden çalışır).
+
+> Projenizde `bib-ayar.tex` yoksa proje bu dosya eklenmeden önceki şablon sürümünden açılmıştır. Dosyayı
+> [GitHub'dan](https://github.com/burhanbarakli/sau-fbe-doktora-latex-sablonu/blob/main/sablon/bib-ayar.tex)
+> indirip **Yeni Dosya → Yükle** ile ekleyin; galeriyi güncellemek için `./kur.sh --sablon`.
+
+**Kaynak arama:** `\parencite{` (ya da `\cite{`, `\textcite{`) yazıp **Ctrl+Space**'e basın. Açılan
+**Bu projedeki .bib dosyalarında ara** penceresinde yazar, başlık ya da anahtarın birkaç harfini yazın ve
+**Ekle**'ye basın; anahtar atıfın içine yazılır. Bu özellik ayar gerektirmez.
+
+<a href="docs/img/kaynak_arama.png"><img src="docs/img/kaynak_arama.png" alt="Ctrl+Space ile açılan 'Bu projedeki .bib dosyalarında ara' penceresi; 'Tar' araması tarhan2012 kaydını buluyor" width="640"></a>
+
+### `.bib` dosyasını projeye almak
+
+| Yol | Ne zaman | Nasıl |
+|---|---|---|
+| **Zotero bağlantısı** | Kütüphaneniz zotero.org ile eşitleniyorsa | Yönetici bir kez açar (aşağıda). Sonra **Hesap → Hesap Ayarları → Referans yöneticileri → Zotero'ya bağlan**. Projede **Yeni Dosya → Zotero'dan** → dosya adı `zotero.bib`, kütüphane ya da grup seçin → **Oluştur**. Zotero'da değişiklik yaptıktan sonra dosyayı açıp **Yenile**'ye basın. |
+| **Mendeley bağlantısı** | Mendeley kullanıyorsanız | Aynı adımlar: **Mendeley'e bağlan**, **Yeni Dosya → Mendeley'dan**. |
+| **Zotero + Better BibTeX** | Bağlantı açık değilse ya da çevrimdışı | Bilgisayarınızda Zotero'ya [Better BibTeX](https://retorque.re/zotero-better-bibtex/) kurun, koleksiyonu **Better BibLaTeX** olarak dışa aktarın, `.bib`'i **Yeni Dosya → Yükle** ile ekleyin. Kaynak ekledikçe yeniden yükleyin. |
+| **Mendeley / JabRef / EndNote** | Diğer araçlar | BibTeX ya da BibLaTeX olarak dışa aktarıp **Yükle**. |
+
+Bağlantıyla gelen `.bib` editörde **salt okunurdur** ve yalnızca onu ekleyen kişi yenileyebilir; projeyi
+paylaştığınız danışman dosyayı görür ama yenileyemez. Bu özellik AyakaLeaf'te henüz beta durumundadır.
+"Zotero'dan" seçeneği **Yeni Dosya** penceresinde yalnızca hesabınız bağlandıktan sonra görünür.
+
+<a href="docs/img/zotero_ayar.png"><img src="docs/img/zotero_ayar.png" alt="Hesap Ayarları → Referans yöneticileri → Zotero'ya bağlan" width="640"></a>
+
+### Zotero / Mendeley bağlantısını açmak (yönetici, bir kez)
+
+1. **Zotero:** <https://www.zotero.org/oauth/apps> → *Register a new application*. Uygulama türü **Browser**,
+   *Callback URL* `http://localhost:8080/user/zotero/oauth/callback` (portu değiştirdiyseniz onu yazın).
+   Verilen **Client Key** ve **Client Secret**'ı not edin.
+   **Mendeley:** <https://dev.mendeley.com/myapps.html> → yeni uygulama, *Redirect URL*
+   `http://localhost:8080/user/mendeley/oauth/callback`, yetkilendirme akışı **Elsevier**. **ID** ve **Secret**'ı not edin.
+2. Bu depo klasöründe `kur.sh`'ı anahtarlarla yeniden çalıştırın (mevcut kurulum ve projeler korunur):
+   ```bash
+   ZOTERO_CLIENT_ID=... ZOTERO_CLIENT_SECRET=... ./kur.sh
+   ```
+   Mendeley için `MENDELEY_CLIENT_ID=... MENDELEY_CLIENT_SECRET=...` ekleyin; ikisi birlikte verilebilir. Betik
+   `config/variables.env`'e `ENABLED_LINKED_FILE_TYPES` (zotero/mendeley eklenir), istemci anahtarlarını ve
+   `ZOTERO_CIPHER_PASSWORD` / `MENDELEY_CIPHER_PASSWORD` şifreleme anahtarını yazar ve sunucuyu yeniden başlatır.
+   Elle yapmak isterseniz aynı satırları ekleyip `bin/up -d` çalıştırın.
+
+Sunucunun internete açık olması gerekmez: bağlanma tarayıcınız üzerinden olur, sunucu yalnızca zotero.org ve
+Mendeley API'sine erişebilmelidir (gerekirse `ZOTERO_PROXY_URL` / `MENDELEY_PROXY_URL`). Ayrıntı: AyakaLeaf
+belgeleri, [Zotero](https://ayakaleaf-pro.ayaka.space/on-premises/configuration/overleaf-toolkit/integrations/zotero-integration.md)
+ve [Mendeley](https://ayakaleaf-pro.ayaka.space/on-premises/configuration/overleaf-toolkit/integrations/mendeley-integration.md).
+
+### Diğer eklentiler
+
+AyakaLeaf Pro'da kaynak yönetimi dışında da şu özellikler vardır. `kur.sh` bunları ayarlamaz; açmak ya da
+yapılandırmak için AyakaLeaf belgelerine bakın:
+
+| Özellik | Ne işe yarar |
+|---|---|
+| [GitHub / GitLab / Gitea eşitleme](https://ayakaleaf-pro.ayaka.space/on-premises/readme/features-and-copyright.md) | Projeyi bir Git deposuyla iki yönlü eşitler (tezin sürüm geçmişi ve yedeği). |
+| [Dropbox eşitleme](https://ayakaleaf-pro.ayaka.space/on-premises/readme/features-and-copyright.md) | Proje dosyalarını Dropbox klasörüyle eşitler. |
+| [MCP sunucusu](https://ayakaleaf-pro.ayaka.space/on-premises/configuration/overleaf-toolkit/integrations/mcp-server.md) | Claude Code gibi yapay zekâ araçlarının projeyi okuyup düzenlemesine ve derlemesine izin verir. |
+| [Yapay zekâ asistanı](https://ayakaleaf-pro.ayaka.space/on-premises/readme/features-and-copyright.md) | Proje hakkında sohbet ve derleme hatalarını açıklama. |
+
 ## Günlük kullanım
 
 Windows'ta önce Docker Desktop'ı açın (Docker Engine yolundaysanız bir Ubuntu penceresi açmanız yeter; kaplar
@@ -193,6 +266,8 @@ alabilirsiniz.
 | Formüllerin yazı tipi Word'den farklı | TeX Live imajında Times New Roman vardır (metin Word ile aynı kırılır) ama Cambria Math yoktur; formüller **STIX Two Math** ile dizilir. |
 | Şablon galeride yok | Sunucu çalışırken `./kur.sh --sablon`. |
 | Port 8080 dolu | `AYAKALEAF_PORT=8090 ./kur.sh` |
+| **Yeni Dosya** penceresinde "Zotero'dan" yok | Önce **Hesap Ayarları → Zotero'ya bağlan**. Ayarlarda *Referans yöneticileri* bölümü hiç yoksa bağlantı açılmamıştır: [Zotero / Mendeley bağlantısını açmak](#zotero--mendeley-bağlantısını-açmak-yönetici-bir-kez). |
+| Atıf yerine anahtar ya da soru işareti çıkıyor, kaynakça boş | `\addbibresource{...}`'taki ad `.bib` dosyasının adıyla aynı mı? Anahtar `.bib`'de var mı? Zotero dosyasını açıp **Yenile**'ye basın, sonra yeniden derleyin. |
 
 Ayrıntılı kurulum sorunları: AyakaLeaf'in [Windows](https://ayakaleaf-pro.ayaka.space/on-premises/installation/using-docker-compose/windows/troubleshooting)
 ve [macOS](https://ayakaleaf-pro.ayaka.space/on-premises/installation/using-docker-compose/macos/troubleshooting) sorun giderme sayfaları.

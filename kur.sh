@@ -9,6 +9,8 @@
 #   AYAKALEAF_PORT   Tarayıcı portu               (varsayılan: 8080)
 #   TEXLIVE_IMAGE    TeX Live imajı               (varsayılan: ghcr.io/ayaka-notes/texlive-full:2026.1)
 #   AYAKALEAF_EMAIL  Yönetici e-postası           (verilmezse sorulur)
+#   ZOTERO_CLIENT_ID, ZOTERO_CLIENT_SECRET       verilirse Zotero bağlantısı açılır (isteğe bağlı)
+#   MENDELEY_CLIENT_ID, MENDELEY_CLIENT_SECRET   verilirse Mendeley bağlantısı açılır (isteğe bağlı)
 set -euo pipefail
 
 BURASI="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -30,7 +32,7 @@ sablon_yukle() {
   [ -n "$email" ] || read -r -p "Yönetici e-postası (giriş adınız olacak): " email
   local ek=()
   [ "${1:-}" = "--yonetici-olustur" ] && ek+=(--yonetici-olustur)
-  python3 "$BURASI/sablonu-yayinla.py" --url "$URL" --email "$email" "${ek[@]}"
+  python3 "$BURASI/sablonu-yayinla.py" --url "$URL" --email "$email" ${ek[@]+"${ek[@]}"}
 }
 
 if [ "${1:-}" = "--sablon" ]; then
@@ -127,6 +129,23 @@ env_ayarla TEMPLATE_THESIS_DESCRIPTION '"Lisansüstü tez şablonları"'
 env_ayarla TEMPLATE_ALL_NAME '"Tüm şablonlar"'
 env_ayarla TEMPLATE_ALL_DESCRIPTION '"Bütün şablonlar"'
 
+# Zotero / Mendeley (isteğe bağlı): istemci kimliği ve gizli anahtar verilirse "Yeni Dosya > Zotero'dan" açılır.
+BAGLANTILAR=()
+for SAG in ZOTERO MENDELEY; do
+  ID_DEG="${SAG}_CLIENT_ID"; GIZ_DEG="${SAG}_CLIENT_SECRET"
+  [ -n "${!ID_DEG:-}" ] && [ -n "${!GIZ_DEG:-}" ] || continue
+  TUR="$(printf '%s' "$SAG" | tr '[:upper:]' '[:lower:]')"
+  TURLER="$(grep '^ENABLED_LINKED_FILE_TYPES=' config/variables.env | cut -d= -f2- || true)"
+  TURLER="${TURLER:-project_file,project_output_file}"
+  case ",$TURLER," in *",$TUR,"*) ;; *) TURLER="$TURLER,$TUR" ;; esac
+  env_ayarla ENABLED_LINKED_FILE_TYPES "$TURLER"
+  env_ayarla "$ID_DEG" "${!ID_DEG}"
+  env_ayarla "$GIZ_DEG" "${!GIZ_DEG}"
+  grep -q "^${SAG}_CIPHER_PASSWORD=" config/variables.env || env_ayarla "${SAG}_CIPHER_PASSWORD" "$(openssl rand -hex 32)"
+  BAGLANTILAR+=("$TUR")
+  bilgi "$SAG bağlantısı açıldı (geri dönüş adresi: $URL/user/$TUR/oauth/callback)."
+done
+
 # MongoDB, 6.19 - 7.0.13 arası Linux çekirdeklerinde çöker (AyakaLeaf belgesi); gerekiyorsa geçici çözüm.
 KERNEL="$(docker info --format '{{.KernelVersion}}' | grep -oE '^[0-9]+\.[0-9]+(\.[0-9]+)?')"
 IFS=. read -r KMAJ KMIN KPAT <<<"$KERNEL"; KPAT="${KPAT:-0}"
@@ -158,3 +177,6 @@ bilgi "Kurulum tamam."
 echo "    Adres     : $URL   (proje listesindeki \"Tezim\" projesini açıp adını değiştirin)"
 echo "    Şablon    : $URL/templates/thesis"
 echo "    Toolkit   : $DIZIN   (durdur: bin/stop, başlat: bin/start)"
+for TUR in ${BAGLANTILAR[@]+"${BAGLANTILAR[@]}"}; do
+  echo "    $TUR : Hesap ayarlarında hesabınızı bağlayın, sonra projede Yeni Dosya menüsünden .bib ekleyin"
+done
