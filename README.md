@@ -2,8 +2,9 @@
 
 Kendi bilgisayarınızda (ya da bölümünüzün sunucusunda) çalışan, **Overleaf benzeri çevrimiçi bir LaTeX
 editörü** kurar ve içine **Sakarya Üniversitesi Fen Bilimleri Enstitüsü lisansüstü tez şablonunu** hazır
-şablon olarak ekler. Kurulumdan sonra tarayıcıda **Yeni Proje → Diğer şablonlar → Tezler → SAÜ FBE Lisansüstü Tez Şablonu →
-Şablon Olarak Aç** ile tezinize başlarsınız; TeX dağıtımı kurmanız gerekmez.
+şablon olarak ekler. Kurulumdan sonra proje listenizde şablonun hazır bir kopyası (**Tezim**) durur: açın,
+adını değiştirin ve yazmaya başlayın. Yeni kopyalar için şablon galeride de durur (**Yeni Proje → Diğer şablonlar →
+Tezler**). TeX dağıtımı kurmanız gerekmez.
 
 - **Şablonun kendisi (LaTeX, Word karşılaştırması):** <https://github.com/burhanbarakli/sau-fbe-doktora-latex-sablonu>
 - **Şablonun resimli kullanım kılavuzu:** <https://burhanbarakli.github.io/sau-fbe-doktora-latex-sablonu/>
@@ -37,6 +38,8 @@ editörü** kurar ve içine **Sakarya Üniversitesi Fen Bilimleri Enstitüsü li
 4. `bin/up -d` ile kapları başlatır (ilk seferde imajlar iner).
 5. `sablonu-yayinla.py` ile ilk **yönetici hesabını** oluşturur, şablonun son sürümünü GitHub'dan indirir,
    proje olarak yükler, derleyiciyi **LuaLaTeX** yapıp derler ve galeride yayınlar.
+6. Yönetici hesabında henüz proje yoksa şablonun bir kopyasını **Tezim** adıyla hazır proje olarak oluşturur.
+   Hesapta zaten proje varsa (adı değiştirilmiş olsa bile) yeni kopya eklemez.
 
 ## Gereksinimler
 
@@ -117,9 +120,12 @@ başlatmalar saniyeler içinde olur.
 ## Kullanım
 
 1. <http://localhost:8080> → yönetici e-postanız ve şifrenizle giriş yapın.
-2. **Yeni Proje → Diğer şablonlar → Tezler** menüsünden ya da <http://localhost:8080/templates/thesis> sayfasından
-   **SAÜ FBE Lisansüstü Tez Şablonu**'nu açın ve **Şablon Olarak Aç**'a tıklayın.
-3. Projeniz oluşur ve editörde açılır; derleyici LuaLaTeX olarak ayarlıdır, ilk derleme kendiliğinden başlar. Sol taraftaki dosya ağacında:
+2. Proje listesinde **Tezim** hazır durur. Adını değiştirmek için satırın onay kutusunu işaretleyip
+   **Daha fazla → Adlandır**'ı seçin (ya da editörde üstteki proje adına tıklayın). Projeye tıklayıp açın;
+   derleyici LuaLaTeX olarak ayarlıdır.
+3. Başka bir kopya gerekirse (örneğin ikinci bir tez ya da başka bir kullanıcı için): **Yeni Proje → Diğer
+   şablonlar → Tezler** ya da <http://localhost:8080/templates/thesis> → **SAÜ FBE Lisansüstü Tez Şablonu** →
+   **Şablon Olarak Aç**. Sol taraftaki dosya ağacında:
    - `tez.tex`: tez başlığı, adınız, anabilim dalı, danışman, jüri ve bölüm sırası,
    - `onkisim/`: teşekkür, özet, summary, kısaltmalar, simgeler,
    - `bolumler/`: bölümler, kaynaklar, ekler, özgeçmiş,
@@ -127,12 +133,16 @@ başlatmalar saniyeler içinde olur.
 4. **Derle** (Ctrl+S / Ctrl+Enter) ile PDF'i sağda görün; **İndir** ile PDF'i alın.
 5. Teslimden önce `tez.tex`'in ilk satırında `notlar` yerine `notsuz` yazın.
 
+> **Arşivlenmiş projeler**'deki "SAÜ FBE Lisansüstü Tez Şablonu" galerinin kaynağıdır; şablon güncellenince
+> silinir. Tezinizi onun içine değil, **Tezim**'e (ya da galeriden açtığınız kopyaya) yazın.
+
 Şablondaki her komutun ne yaptığı ve hangi sayfayı değiştirdiği: [şablon kılavuzu](https://burhanbarakli.github.io/sau-fbe-doktora-latex-sablonu/).
 
 ### Başka kullanıcılar eklemek
 
 Yönetici olarak sağ üstte **Admin → Kullanıcı yönetimi → Hesap oluştur** ile öğrencileri/danışmanları ekleyin;
-projeyi **Paylaş** düğmesiyle birlikte düzenleyebilirsiniz. Varsayılan ayar yalnızca bu bilgisayardan erişime
+projeyi **Paylaş** düğmesiyle birlikte düzenleyebilirsiniz. Hazır **Tezim** projesi yalnızca yönetici hesabına
+konur; yeni kullanıcılar kendi kopyalarını galeriden **Şablon Olarak Aç** ile açar. Varsayılan ayar yalnızca bu bilgisayardan erişime
 izin verir (`127.0.0.1`). Ağdaki başka bilgisayarların erişmesi için `config/overleaf.rc`'de
 `OVERLEAF_LISTEN_IP` ve `config/variables.env`'de `OVERLEAF_SITE_URL` değiştirilmeli, ağ/güvenlik duvarı ve
 HTTPS ayarlanmalıdır; bkz. [AyakaLeaf belgeleri](https://ayakaleaf-pro.ayaka.space/on-premises/).
@@ -157,7 +167,8 @@ kendiliğinden başlar), sonra gerekirse Ubuntu/Terminal'de:
 ./kur.sh --sablon
 ```
 
-Galerideki şablon yeni sürümle değişir; daha önce açılmış tez projeleri etkilenmez.
+Galerideki şablon yeni sürümle değişir; **Tezim** ve daha önce açılmış tez projeleri etkilenmez (yeni hazır
+proje de eklenmez).
 
 **Yedek:** `~/ayakaleaf-toolkit/config/` ve `~/ayakaleaf-toolkit/data/` klasörleri bütün verilerinizdir.
 Yedeklemeden önce `bin/stop` ile durdurun. Ayrıca her projeyi **Menü → Kaynak kodunu indir** ile ZIP olarak
@@ -195,7 +206,7 @@ Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'yi baştan sona
 3. Gereken araçları (git curl openssl python3 perl gawk; macOS'ta Homebrew ve gnu-sed) kontrol et, eksikleri onayımla kur.
 4. Depoyu ev klasörüme (Windows'ta Ubuntu'nun ev klasörüne, /mnt/c altına değil) klonla ve `./kur.sh`'ı çalıştır. Yönetici e-postası ve şifresi sorulunca bana sor; şifreyi sohbete yazdırma, betiğin istemine benim girmemi iste.
 5. İmajlar inerken ilerlemeyi takip et; hata olursa README'deki sorun giderme tablosuna ve `bin/docker-compose logs` çıktısına göre düzelt.
-6. Bitince http://localhost:8080/templates/thesis adresinde şablonun göründüğünü doğrula ve bana günlük kullanım komutlarını (bin/start, bin/stop) özetle.
+6. Bitince http://localhost:8080/templates/thesis adresinde şablonun, proje listesinde de hazır "Tezim" projesinin durduğunu doğrula ve bana günlük kullanım komutlarını (bin/start, bin/stop) özetle.
 ```
 
 ## Dosyalar

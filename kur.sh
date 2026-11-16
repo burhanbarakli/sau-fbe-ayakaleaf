@@ -149,12 +149,12 @@ curl -fsS -o /dev/null "$URL/launchpad" || hata "Uygulama açılmadı. Günlük:
 
 # ---------------------------------------------------------------- 5. yönetici + şablon
 echo
-bilgi "Şimdi yönetici hesabı oluşturulacak (yoksa) ve tez şablonu galeriye yüklenecek."
+bilgi "Şimdi yönetici hesabı oluşturulacak (yoksa), tez şablonu galeriye yüklenecek ve hazır \"Tezim\" projesi açılacak."
 echo "    Şifre en az 8 karakter olmalı ve e-postaya benzememeli."
 sablon_yukle --yonetici-olustur
 
 echo
 bilgi "Kurulum tamam."
-echo "    Adres     : $URL"
+echo "    Adres     : $URL   (proje listesindeki \"Tezim\" projesini açıp adını değiştirin)"
 echo "    Şablon    : $URL/templates/thesis"
 echo "    Toolkit   : $DIZIN   (durdur: bin/stop, başlat: bin/start)"

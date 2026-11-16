@@ -124,7 +124,8 @@ figure.wide{max-width:980px;margin:14px 0}
     <li><a href="#claude">Claude ile kurulum</a></li>
     <li class="grp">Kullanım</li>
     <li><a href="#giris">İlk giriş</a></li>
-    <li><a href="#sablon">Şablonla tez başlatma</a></li>
+    <li><a href="#hazir">Hazır proje: Tezim</a></li>
+    <li><a href="#sablon">Galeriden yeni kopya</a></li>
     <li><a href="#yazma">Tezi yazma</a></li>
     <li><a href="#kullanicilar">Kullanıcı ekleme</a></li>
     <li class="grp">Bakım</li>
@@ -137,7 +138,7 @@ figure.wide{max-width:980px;margin:14px 0}
 <main>
 <header class="hero">
   <h1>SAÜ FBE Tez Şablonu + AyakaLeaf Pro<br>Kurulum ve Kullanım Kılavuzu</h1>
-  <p class="lead">Kendi bilgisayarınızda çalışan, Overleaf benzeri bir çevrimiçi LaTeX editörü kurar ve içine Sakarya Üniversitesi Fen Bilimleri Enstitüsü lisansüstü tez şablonunu hazır şablon olarak ekler. TeX dağıtımı kurmadan, tarayıcıda tez yazarsınız.</p>
+  <p class="lead">Kendi bilgisayarınızda çalışan, Overleaf benzeri bir çevrimiçi LaTeX editörü kurar ve içine Sakarya Üniversitesi Fen Bilimleri Enstitüsü lisansüstü tez şablonunu hazır şablon olarak ekler. Kurulumdan sonra proje listenizde şablonun hazır kopyası <b>Tezim</b> durur: açın, adını değiştirin, yazmaya başlayın. TeX dağıtımı kurmanız gerekmez.</p>
   <div class="btns">
     <a class="btn primary" href="https://github.com/burhanbarakli/sau-fbe-ayakaleaf">GitHub deposu</a>
     <a class="btn" href="https://github.com/burhanbarakli/sau-fbe-ayakaleaf/archive/refs/heads/main.zip">⬇ ZIP indir</a>
@@ -170,6 +171,7 @@ figure.wide{max-width:980px;margin:14px 0}
   <li><b>Ayarlar</b>AyakaLeaf Pro imajı, port 8080, Türkçe arayüz, TeX Live 2026, sandbox derleme, şablon galerisi.</li>
   <li><b>Başlatır</b><code>bin/up -d</code>; ilk seferde imajlar iner.</li>
   <li><b>Yükler</b>Yönetici hesabını oluşturur; şablonu GitHub'dan indirip LuaLaTeX ile derler ve galeride yayınlar.</li>
+  <li><b>Hazırlar</b>Hesapta proje yoksa şablonun kopyasını <b>Tezim</b> adıyla oluşturup derler. Proje varsa yeni kopya eklemez.</li>
 </ol>
 </section>
 
@@ -249,7 +251,7 @@ Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'yi baştan sona
 3. Gereken araçları (git curl openssl python3 perl gawk; macOS'ta Homebrew ve gnu-sed) kontrol et, eksikleri onayımla kur.
 4. Depoyu ev klasörüme (Windows'ta Ubuntu'nun ev klasörüne, /mnt/c altına değil) klonla ve `./kur.sh`'ı çalıştır. Yönetici e-postası ve şifresi sorulunca bana sor; şifreyi sohbete yazdırma, betiğin istemine benim girmemi iste.
 5. İmajlar inerken ilerlemeyi takip et; hata olursa README'deki sorun giderme tablosuna ve `bin/docker-compose logs` çıktısına göre düzelt.
-6. Bitince http://localhost:8080/templates/thesis adresinde şablonun göründüğünü doğrula ve bana günlük kullanım komutlarını (bin/start, bin/stop) özetle.</code></pre>
+6. Bitince http://localhost:8080/templates/thesis adresinde şablonun, proje listesinde de hazır "Tezim" projesinin durduğunu doğrula ve bana günlük kullanım komutlarını (bin/start, bin/stop) özetle.</code></pre>
 </section>
 
 <section id="giris">
@@ -258,8 +260,20 @@ Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'yi baştan sona
 <figure class="wide" style="max-width:640px"><a href="img/giris.png"><img src="img/giris.png" alt="AyakaLeaf giriş sayfası" loading="lazy"></a><figcaption>Giriş sayfası</figcaption></figure>
 </section>
 
+<section id="hazir">
+<h2>Hazır proje: Tezim</h2>
+<p>Girişten sonra proje listenizde <b>Tezim</b> hazır durur; şablonun derlenmiş bir kopyasıdır. Yeni proje oluşturmanıza gerek yoktur:</p>
+<ol>
+  <li>Satırın onay kutusunu işaretleyin, <b>Daha fazla → Adlandır</b> ile adını değiştirin (ya da projeyi açıp üstteki proje adına tıklayın).</li>
+  <li>Projeye tıklayıp açın ve <code>tez.tex</code>'ten başlayarak bilgilerinizi yazın.</li>
+</ol>
+<figure class="wide"><a href="img/hazir_proje.png"><img src="img/hazir_proje.png" alt="Proje listesinde hazır Tezim projesi ve Daha fazla menüsünde Adlandır" loading="lazy"></a><figcaption>Proje listesindeki hazır <b>Tezim</b> projesi; <b>Daha fazla → Adlandır</b> ile yeniden adlandırma.</figcaption></figure>
+<div class="warn"><p><b>Arşivlenmiş projeler</b>'deki “SAÜ FBE Lisansüstü Tez Şablonu” galerinin kaynağıdır ve şablon güncellenince silinir. Tezinizi onun içine değil, <b>Tezim</b>'e yazın.</p></div>
+</section>
+
 <section id="sablon">
-<h2>Şablonla tez başlatma</h2>
+<h2>Galeriden yeni kopya</h2>
+<p>İkinci bir proje ya da başka bir kullanıcı için şablonun yeni bir kopyasını galeriden açın. (Hazır <b>Tezim</b> projesi yalnızca yönetici hesabına konur.)</p>
 <h3>1. Yeni Proje → Diğer şablonlar → Tezler</h3>
 <div class="pair">
   <figure class=""><a href="img/yeni_proje.png"><img src="img/yeni_proje.png" alt="Yeni Proje menüsü" loading="lazy"></a><figcaption><b>Yeni Proje</b> menüsü</figcaption></figure>
@@ -270,7 +284,7 @@ Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'yi baştan sona
 <figure class="wide"><a href="img/galeri.png"><img src="img/galeri.png" alt="Tezler kategorisinde SAÜ FBE şablonu" loading="lazy"></a><figcaption>Şablon galerisi, “Tezler” kategorisi</figcaption></figure>
 <h3>3. Şablon Olarak Aç</h3>
 <figure class="wide"><a href="img/sablon.png"><img src="img/sablon.png" alt="Şablon ayrıntı sayfası: Şablon Olarak Aç düğmesi ve PDF önizlemesi" loading="lazy"></a><figcaption><b>Şablon Olarak Aç</b> şablonun bir kopyasını sizin projeniz olarak oluşturur. <b>PDF’i Görüntüle</b> örnek çıktıyı, bulut simgesi kaynak ZIP’ini indirir.</figcaption></figure>
-<p>Proje editörde açılır; derleyici <b>LuaLaTeX</b> olarak ayarlıdır ve ilk derleme kendiliğinden başlar (yukarıdaki <a href="#nedir">editör görüntüsü</a>). Her öğrenci kendi kopyasını açar; galerideki şablon değişmez.</p>
+<p>Proje editörde açılır; derleyici <b>LuaLaTeX</b> olarak ayarlıdır ve ilk derleme kendiliğinden başlar (yukarıdaki <a href="#nedir">editör görüntüsü</a>). Galerideki şablon değişmez.</p>
 </section>
 
 <section id="yazma">
@@ -293,7 +307,7 @@ Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'yi baştan sona
 
 <section id="kullanicilar">
 <h2>Kullanıcı ekleme</h2>
-<p>Yönetici olarak sağ üstte <b>Admin → Kullanıcı yönetimi → Hesap oluştur</b> ile öğrencileri ve danışmanları ekleyin.</p>
+<p>Yönetici olarak sağ üstte <b>Admin → Kullanıcı yönetimi → Hesap oluştur</b> ile öğrencileri ve danışmanları ekleyin. Yeni kullanıcılar kendi kopyalarını <a href="#sablon">galeriden</a> açar.</p>
 <figure class="wide"><a href="img/kullanicilar.png"><img src="img/kullanicilar.png" alt="Admin kullanıcı yönetimi sayfası" loading="lazy"></a><figcaption>Kullanıcı yönetimi</figcaption></figure>
 <div class="warn"><p>Varsayılan kurulum yalnızca bu bilgisayardan erişime izin verir (<code>127.0.0.1</code>). Ağdaki başka bilgisayarların kullanması için <code>config/overleaf.rc</code>'de <code>OVERLEAF_LISTEN_IP</code>, <code>config/variables.env</code>'de <code>OVERLEAF_SITE_URL</code> değiştirilmeli; güvenlik duvarı ve HTTPS ayarlanmalıdır. Paylaşılan bir sunucu için Linux kurulumunu ve <a href="https://ayakaleaf-pro.ayaka.space/on-premises/">AyakaLeaf belgelerini</a> izleyin.</p></div>
 </section>
@@ -316,7 +330,7 @@ Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'yi baştan sona
 <h2>Şablonu güncelleme ve yedek</h2>
 <p>GitHub'daki şablona yeni sürüm geldiğinde, sunucu çalışırken bu deponun klasöründe:</p>
 <pre><code>./kur.sh --sablon</code></pre>
-<p>Galerideki şablon yeni sürümle değişir; daha önce açılmış tez projeleri etkilenmez.</p>
+<p>Galerideki şablon yeni sürümle değişir; <b>Tezim</b> ve daha önce açılmış tez projeleri etkilenmez, yeni hazır proje de eklenmez.</p>
 <p><b>Yedek:</b> <code>~/ayakaleaf-toolkit/config/</code> ve <code>~/ayakaleaf-toolkit/data/</code> bütün verilerinizdir; kopyalamadan önce <code>bin/stop</code> ile durdurun. Ayrıca her projeyi <b>Menü → Kaynak olarak indir (.zip)</b> ile alabilirsiniz.</p>
 </section>
 

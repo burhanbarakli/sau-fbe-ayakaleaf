@@ -7,6 +7,9 @@ Yaptıkları:
   3. Şablonu GitHub'dan indirir (ya da --kaynak ile verilen klasörü/ZIP'i kullanır) ve proje olarak yükler.
   4. Projenin derleyicisini LuaLaTeX yapar ve derler.
   5. Projeyi "Tezler" kategorisinde şablon olarak yayınlar; aynı adlı şablon varsa yeni sürüm olarak günceller.
+     Galerinin kaynak projesini arşive kaldırır (proje listesinde görünmez, şablon güncellenince silinir).
+  6. Yöneticinin başka hiç projesi yoksa şablonun bir kopyasını "Tezim" adıyla hazır proje olarak oluşturur;
+     kullanıcı bunu açıp yeniden adlandırarak doğrudan tezine başlar. Zaten bir projesi varsa dokunmaz.
 
 Yalnızca Python 3 standart kitaplığını kullanır.
 Örnek:  python3 sablonu-yayinla.py --url http://localhost:8080 --email admin@ornek.edu.tr
@@ -30,6 +33,7 @@ KAYNAK_ZIP = 'https://codeload.github.com/burhanbarakli/sau-fbe-doktora-latex-sa
 KILAVUZ = 'https://burhanbarakli.github.io/sau-fbe-doktora-latex-sablonu/'
 DEPO = 'https://github.com/burhanbarakli/sau-fbe-doktora-latex-sablonu'
 SABLON_ADI = 'SAÜ FBE Lisansüstü Tez Şablonu'
+HAZIR_AD = 'Tezim'
 ACIKLAMA = f'''Sakarya Üniversitesi Fen Bilimleri Enstitüsü doktora ve yüksek lisans tez şablonu.
 Enstitünün resmi Word şablonunun ve Lisansüstü Tez Yazım Kılavuzu'nun LuaLaTeX karşılığıdır.
 
@@ -164,6 +168,16 @@ def proje_yukle(ist, ad, zip_bayt):
     return pid
 
 
+def projeler(ist):
+    """Giriş yapan kullanıcının çöpte olmayan projeleri: [(id, ad, arşivde_mi)]."""
+    kod, yanit = ist.istek('/api/project', json_veri={'filters': {}, 'page': {'size': 1000},
+                                                      'sort': {'by': 'lastUpdated', 'order': 'desc'}})
+    if kod != 200:
+        return None
+    return [(p['id'], p['name'], p.get('archived')) for p in json.loads(yanit).get('projects', [])
+            if not p.get('trashed')]
+
+
 def derle(ist, pid, deneme=3):
     kod, yanit = ist.istek(f'/project/{pid}/settings', json_veri={'compiler': 'lualatex'})
     if kod >= 400:
@@ -219,6 +233,23 @@ def yayinla(ist, pid, build, ad):
             log('Önceki sürümün kaynak projesi silindi.')
     # Kaynak proje yüklenirken eski proje varsa "(2)" eki alır; eski silindikten sonra adı düzelt.
     ist.istek(f'/project/{pid}/rename', json_veri={'newProjectName': ad})
+    # Kaynak proje şablonun malıdır: listeyi kalabalıklaştırmasın ve içine yanlışlıkla tez yazılmasın.
+    if ist.istek(f'/Project/{pid}/archive', govde=b'')[0] < 400:
+        log('Galerinin kaynak projesi arşive kaldırıldı (Arşivlenmiş projeler).')
+
+
+def hazir_proje(ist, zip_bayt, kaynak_pid, ad):
+    liste = projeler(ist)
+    if liste is None:
+        log('Proje listesi okunamadı; hazır proje adımı atlandı.')
+        return
+    kendi = [p for p in liste if p[0] != kaynak_pid]
+    if kendi:
+        log(f'Hesapta zaten {len(kendi)} proje var; hazır "{ad}" projesi eklenmedi.')
+        return
+    pid = proje_yukle(ist, ad, zip_bayt)
+    derle(ist, pid)
+    log(f'Hazır proje oluşturuldu: "{ad}" -> {ist.url}/project/{pid} (adını değiştirip tezinize başlayın)')
 
 
 def main():
@@ -229,6 +260,9 @@ def main():
     p.add_argument('--yonetici-olustur', action='store_true', help='Hiç yönetici yoksa bu e-posta/şifreyle oluşturur.')
     p.add_argument('--kaynak', help='Yerel sablon/ klasörü ya da depo ZIP\'i (verilmezse GitHub\'daki son sürüm).')
     p.add_argument('--ad', default=SABLON_ADI, help='Galerideki şablon adı.')
+    p.add_argument('--hazir-proje', default=HAZIR_AD, metavar='AD',
+                   help='Hesapta proje yoksa şablondan bu adla hazır proje oluşturur (varsayılan: Tezim).')
+    p.add_argument('--hazir-proje-yok', action='store_true', help='Hazır proje oluşturma.')
     p.add_argument('--bekle', type=int, default=600, help='Sunucunun açılmasını bekleme süresi (sn).')
     a = p.parse_args()
 
@@ -243,10 +277,13 @@ def main():
     if a.yonetici_olustur:
         yonetici_olustur(ist, email, sifre)
     giris(ist, email, sifre)
-    pid = proje_yukle(ist, a.ad, sablon_zip(a.kaynak))
+    zip_bayt = sablon_zip(a.kaynak)
+    pid = proje_yukle(ist, a.ad, zip_bayt)
     build = derle(ist, pid)
     yayinla(ist, pid, build, a.ad)
-    log(f'Bitti. Tarayıcıda açın: {ist.url}/templates/thesis')
+    if not a.hazir_proje_yok:
+        hazir_proje(ist, zip_bayt, pid, a.hazir_proje)
+    log(f'Bitti. Tarayıcıda açın: {ist.url}/project')
 
 
 if __name__ == '__main__':
