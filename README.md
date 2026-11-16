@@ -2,7 +2,7 @@
 
 [![AyakaLeaf editöründe SAÜ FBE tez şablonu: solda tez.tex, sağda LuaLaTeX ile derlenmiş 79 sayfalık PDF](docs/img/editor.png)](https://burhanbarakli.github.io/sau-fbe-ayakaleaf/)
 
-<p align="center"><sub>Kurulumdan sonra hazır <b>Tezim</b> projesi: solda <code>tez.tex</code>, sağda LuaLaTeX ile derlenmiş PDF.
+<p align="center"><sub>Şablondan açılan proje: solda <code>tez.tex</code>, sağda LuaLaTeX ile derlenmiş PDF.
 <a href="https://burhanbarakli.github.io/sau-fbe-ayakaleaf/">Resimli kurulum ve kullanım kılavuzu</a></sub></p>
 
 Kendi bilgisayarınızda (ya da bölümünüzün sunucusunda) çalışan, **Overleaf benzeri çevrimiçi bir LaTeX
