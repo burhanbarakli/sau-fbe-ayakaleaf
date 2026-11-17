@@ -4,4 +4,4 @@
 *.command text eol=lf
 *.yml text eol=lf
 *.bat text eol=crlf
-*.txt text eol=crlf
+OKUBENI.txt text eol=crlf

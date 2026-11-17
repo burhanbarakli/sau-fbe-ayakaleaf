@@ -16,6 +16,10 @@ on:
     paths: ['tasinabilir/**', '.github/workflows/tasinabilir.yml']
     tags: ['tasinabilir-v*']
 
+concurrency:
+  group: tasinabilir-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   AYA_IMAJ: ghcr.io/ayaka-notes/overleaf-pro:6.3.3
   NODE_SURUM: v24.22.3
