@@ -158,6 +158,7 @@ const env = {
   ADMIN_PRIVILEGE_AVAILABLE: 'true',
   OPTIMISE_PDF: 'false',
   REQ_VALIDATION_MODE: 'enforce-log',
+  GRACEFUL_SHUTDOWN_DELAY_SECONDS: '1', // Docker imajindaki deger; varsayilanla servisler kapanirken uzun bekler
   TEXMFVAR: p(path.join(TMP, 'texmf-var')),
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
   SITE_MAINTENANCE_FILE: path.join(VERI, 'site_status'),
@@ -200,21 +201,39 @@ function nodeCalistir(ad, args, cwd, zaman) {
   fs.appendFileSync(path.join(LOG, ad + '.log'), (r.stdout || '') + (r.stderr || ''))
   if (r.status !== 0) throw new Error(`${ad} başarısız; günlük: ${path.join(LOG, ad + '.log')}`)
 }
+const calisiyorMu = c => c.exitCode === null && c.signalCode === null
+function cikisBekle(liste, ms) {
+  return Promise.all(liste.filter(({ c }) => calisiyorMu(c)).map(({ c }) => new Promise(ok => {
+    const t = setTimeout(ok, ms)
+    c.once('exit', () => { clearTimeout(t); ok() })
+  })))
+}
+async function durdur(liste, ms) {
+  for (const { c } of liste) if (calisiyorMu(c)) try { c.kill('SIGTERM') } catch {}
+  await cikisBekle(liste, ms)
+  for (const { c } of liste) if (calisiyorMu(c)) try { c.kill('SIGKILL') } catch {}
+  await cikisBekle(liste, 3000)
+}
 async function kapat(kod = 0) {
   if (kapaniyor) return
   kapaniyor = true
   console.log('\nKapatılıyor...')
   try { fs.rmSync(path.join(VERI, 'calisiyor.json'), { force: true }) } catch {}
-  for (const { ad, c } of cocuklar) if (!['mongod', 'garnet'].includes(ad)) try { c.kill() } catch {}
+  // once AyakaLeaf servisleri (kapanmalarini bekle; yoksa yeniden acinca portlar dolu kalir)
+  await durdur(cocuklar.filter(({ ad }) => !['mongod', 'garnet'].includes(ad)), 10000)
   // MongoDB'yi duzgun kapat (veritabani dosyalari tutarli kalsin)
-  try {
-    nodeCalistir('mongo-kapat', ['-e', `const { MongoClient } = require('mongodb');
-      (async () => { const c = new MongoClient('mongodb://127.0.0.1:27017/?directConnection=true');
-        await c.connect(); try { await c.db('admin').command({ shutdown: 1 }) } catch {} })().then(() => process.exit(0), () => process.exit(0))`],
-      path.join(APP, 'services', 'web'), 15000)
-  } catch {}
-  for (const { c } of cocuklar) try { c.kill() } catch {}
-  setTimeout(() => process.exit(kod), 1000)
+  const mongo = cocuklar.filter(({ ad }) => ad === 'mongod')
+  if (mongo.some(({ c }) => calisiyorMu(c))) {
+    try {
+      nodeCalistir('mongo-kapat', ['-e', `const { MongoClient } = require('mongodb');
+        (async () => { const c = new MongoClient('mongodb://127.0.0.1:27017/?directConnection=true');
+          await c.connect(); try { await c.db('admin').command({ shutdown: 1 }) } catch {} })().then(() => process.exit(0), () => process.exit(0))`],
+        path.join(APP, 'services', 'web'), 15000)
+    } catch {}
+    await cikisBekle(mongo, 15000)
+  }
+  await durdur(cocuklar, 5000)
+  process.exit(kod)
 }
 process.on('SIGINT', () => kapat(0))
 process.on('SIGTERM', () => kapat(0))
