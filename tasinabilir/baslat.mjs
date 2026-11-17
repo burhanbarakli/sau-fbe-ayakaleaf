@@ -106,9 +106,12 @@ for (const d of ['data/compiles', 'data/output', 'data/cache', 'data/template_fi
 if (!fs.existsSync(path.join(VERI, 'site_status'))) fs.writeFileSync(path.join(VERI, 'site_status'), '')
 
 // --- ilk kurulum bilgileri (servisler baslamadan once sorulur)
-let kurulumBilgisi = null
-if (!fs.existsSync(KURULUM)) {
-  let email = process.env.AYA_YONETICI_EPOSTA, sifre = process.env.AYA_YONETICI_SIFRE
+// Ilk kurulumda hazir yonetici hesabi; site yalnizca bu bilgisayardan acilir, sifre Hesap Ayarlari'ndan degisir.
+const VARSAYILAN_EPOSTA = 'tez@sau.local', VARSAYILAN_SIFRE = 'sakarya2026'
+let kurulumBilgisi = null, kurulum = null
+try { kurulum = JSON.parse(fs.readFileSync(KURULUM, 'utf8')) } catch {}
+if (!kurulum) {
+  let email = process.env.AYA_YONETICI_EPOSTA || VARSAYILAN_EPOSTA, sifre = process.env.AYA_YONETICI_SIFRE || VARSAYILAN_SIFRE
   if (!email || !sifre) {
     console.log('İlk kurulum: AyakaLeaf\'e gireceğiniz yönetici hesabını belirleyin (yalnızca bu bilgisayarda geçerli).')
     while (!/^[^@\s]+@[^@\s]+$/.test(email || '')) email = await sor('  E-posta: ')
@@ -355,7 +358,8 @@ if (kurulumBilgisi) {
   try {
     if (!fs.existsSync(SABLON_ZIP)) throw new Error(`sablon.zip bulunamadı: ${SABLON_ZIP}`)
     await sablonYukle({ url: `http://127.0.0.1:${PORT}`, ...kurulumBilgisi, zipYolu: SABLON_ZIP, yoneticiOlusturulsun: true })
-    fs.writeFileSync(KURULUM, JSON.stringify({ tarih: new Date().toISOString(), email: kurulumBilgisi.email }, null, 2))
+    kurulum = { tarih: new Date().toISOString(), email: kurulumBilgisi.email, varsayilanSifre: kurulumBilgisi.sifre === VARSAYILAN_SIFRE }
+    fs.writeFileSync(KURULUM, JSON.stringify(kurulum, null, 2))
     console.log('\nKURULUM TAMAM')
   } catch (e) {
     console.error(`\nŞablon yüklenemedi: ${e.message}\nAyakaLeaf çalışmaya devam ediyor. Kapatıp yeniden açtığınızda kurulum tekrar denenir.`)
@@ -366,5 +370,6 @@ if (kurulumBilgisi) {
 }
 
 console.log(`\nTarayıcıda açın: ${SITE}`)
+if (kurulum?.email) console.log(`Giriş: ${kurulum.email}` + (kurulum.varsayilanSifre ? ` / ${VARSAYILAN_SIFRE}  (ilk şifre; değiştirmek için sağ üstte Hesap -> Hesap Ayarları)` : ''))
 console.log('Bu pencere açık kaldığı sürece AyakaLeaf çalışır. Kapatmak için Ctrl+C\'ye basın ya da pencereyi kapatın.')
 tarayiciAc(SITE)

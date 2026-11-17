@@ -8,7 +8,8 @@
 #   AYAKALEAF_DIZIN  Toolkit klasörü              (varsayılan: ~/ayakaleaf-toolkit)
 #   AYAKALEAF_PORT   Tarayıcı portu               (varsayılan: 8080)
 #   TEXLIVE_IMAGE    TeX Live imajı               (varsayılan: ghcr.io/ayaka-notes/texlive-full:2026.1)
-#   AYAKALEAF_EMAIL  Yönetici e-postası           (verilmezse sorulur)
+#   AYAKALEAF_EMAIL  Yönetici e-postası           (verilmezse sorulur; Enter: tez@sau.local)
+#   AYAKALEAF_SIFRE  Yönetici şifresi             (verilmezse sorulur; Enter: sakarya2026)
 #   ZOTERO_CLIENT_ID, ZOTERO_CLIENT_SECRET       verilirse Zotero bağlantısı açılır (isteğe bağlı)
 #   MENDELEY_CLIENT_ID, MENDELEY_CLIENT_SECRET   verilirse Mendeley bağlantısı açılır (isteğe bağlı)
 set -euo pipefail
@@ -26,10 +27,22 @@ hata()  { printf '\033[1;31m[x]\033[0m %s\n' "$*" >&2; exit 1; }
 sor()   { local c; read -r -p "$1 [e/H] " c; [[ "$c" =~ ^[eEyY] ]]; }
 
 # ---------------------------------------------------------------- şablonu yükle
+# Enter'a basılırsa kullanılan hesap (yalnızca bu bilgisayardan erişilir; Hesap Ayarları'ndan değiştirilebilir)
+VARSAYILAN_EPOSTA="tez@sau.local"
+VARSAYILAN_SIFRE="sakarya2026"
 sablon_yukle() {
   command -v python3 >/dev/null || hata "python3 bulunamadı."
-  local email="${AYAKALEAF_EMAIL:-}"
-  [ -n "$email" ] || read -r -p "Yönetici e-postası (giriş adınız olacak): " email
+  local email="${AYAKALEAF_EMAIL:-}" s=""
+  if [ -z "$email" ]; then
+    read -r -p "Yönetici e-postası [Enter: $VARSAYILAN_EPOSTA]: " email
+    email="${email:-$VARSAYILAN_EPOSTA}"
+  fi
+  if [ -z "${AYAKALEAF_SIFRE:-}" ]; then
+    read -r -s -p "Yönetici şifresi [Enter: $VARSAYILAN_SIFRE]: " s; echo
+    export AYAKALEAF_SIFRE="${s:-$VARSAYILAN_SIFRE}"
+  fi
+  GIRIS_EPOSTA="$email"
+  [ "$AYAKALEAF_SIFRE" = "$VARSAYILAN_SIFRE" ] && VARSAYILAN_SIFRE_KULLANILDI=1
   local ek=()
   [ "${1:-}" = "--yonetici-olustur" ] && ek+=(--yonetici-olustur)
   python3 "$BURASI/sablonu-yayinla.py" --url "$URL" --email "$email" ${ek[@]+"${ek[@]}"}
@@ -169,12 +182,15 @@ curl -fsS -o /dev/null "$URL/launchpad" || hata "Uygulama açılmadı. Günlük:
 # ---------------------------------------------------------------- 5. yönetici + şablon
 echo
 bilgi "Şimdi yönetici hesabı oluşturulacak (yoksa), tez şablonu galeriye yüklenecek ve hazır \"Tezim\" projesi açılacak."
-echo "    Şifre en az 8 karakter olmalı ve e-postaya benzememeli."
+echo "    İkisinde de Enter'a basarsanız varsayılan hesap kullanılır: $VARSAYILAN_EPOSTA / $VARSAYILAN_SIFRE"
+echo "    Kendi şifrenizi yazacaksanız: en az 8 karakter, e-postaya benzememeli."
+VARSAYILAN_SIFRE_KULLANILDI=0
 sablon_yukle --yonetici-olustur
 
 echo
 bilgi "Kurulum tamam."
 echo "    Adres     : $URL   (proje listesindeki \"Tezim\" projesini açıp adını değiştirin)"
+echo "    Giriş     : $GIRIS_EPOSTA$([ "$VARSAYILAN_SIFRE_KULLANILDI" = 1 ] && echo " / $VARSAYILAN_SIFRE  (değiştirmek için: sağ üst Hesap → Hesap Ayarları)")"
 echo "    Şablon    : $URL/templates/thesis"
 echo "    Toolkit   : $DIZIN   (durdur: bin/stop, başlat: bin/start)"
 for TUR in ${BAGLANTILAR[@]+"${BAGLANTILAR[@]}"}; do
