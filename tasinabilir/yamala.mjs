@@ -45,6 +45,27 @@ for (const [dosya, eski, yeni] of yamalar) {
 }
 console.log(`yamalar: ${degisen} dosya degisti`)
 
+// .yarn/cache: imajda arayuzu derlemek icin gereken gelistirme paketleri de durur (~1,6 GB). Calisma aninda
+// yalnizca .pnp.cjs'nin gosterdigi zip'ler yuklenir (~300 MB); digerleri paketi 2 GB sinirinin ustune cikarir.
+const CACHE = path.join(APP, '.yarn', 'cache')
+if (fs.existsSync(CACHE) && fs.existsSync(path.join(APP, '.pnp.cjs'))) {
+  const kullanilan = new Set([...fs.readFileSync(path.join(APP, '.pnp.cjs'), 'utf8').matchAll(/cache\/([^/"]+\.zip)/g)].map(m => m[1]))
+  let silinen = 0, bayt = 0
+  for (const f of fs.readdirSync(CACHE)) {
+    if (!f.endsWith('.zip') || kullanilan.has(f)) continue
+    bayt += fs.statSync(path.join(CACHE, f)).size
+    fs.rmSync(path.join(CACHE, f))
+    silinen++
+  }
+  console.log(`.yarn/cache: ${kullanilan.size} paket kaldı, ${silinen} kullanılmayan paket silindi (${Math.round(bayt / 1048576)} MB)`)
+}
+// kaynak haritalari (.map) tarayicida gerekmez
+let harita = 0
+for (const f of fs.readdirSync(path.join(APP, 'services/web/public'), { recursive: true })) {
+  if (String(f).endsWith('.map')) { fs.rmSync(path.join(APP, 'services/web/public', String(f))); harita++ }
+}
+if (harita) console.log(`public: ${harita} .map dosyası silindi`)
+
 // ayar/settings.js: imajdaki /etc/overleaf/settings.js'ten, sabit Linux yollari ortam degiskenine cevrilerek
 const KOK = path.dirname(APP)
 const kaynak = path.join(KOK, 'etc', 'overleaf', 'settings.js')
