@@ -1,0 +1,30 @@
+SAÜ FBE LaTeX - AyakaLeaf Pro (taşınabilir, Docker'sız)
+=========================================================
+
+Kendi bilgisayarınızda çalışan, Overleaf benzeri LaTeX editörü + SAÜ FBE lisansüstü tez şablonu.
+Docker, WSL, TeX dağıtımı ya da başka bir program kurmanız gerekmez; her şey bu klasördedir.
+
+BAŞLATMA
+  Windows : "Baslat.bat" dosyasına çift tıklayın.
+            "Windows bilgisayarınızı korudu" uyarısı çıkarsa: "Ek bilgi" -> "Yine de çalıştır".
+  macOS   : "Baslat.command" dosyasına çift tıklayın.
+            "Açılamıyor / geliştirici doğrulanamadı" uyarısı çıkarsa: Sistem Ayarları -> Gizlilik ve
+            Güvenlik -> en altta "Yine de Aç". (Eski macOS'ta: dosyaya sağ tık -> Aç -> Aç.)
+
+İLK AÇILIŞ
+  Pencere sizden bir e-posta ve şifre ister: bu, AyakaLeaf'e giriş yapacağınız yönetici hesabıdır
+  (yalnızca bu bilgisayarda geçerli). Sonra şablon yüklenir ve derlenir (birkaç dakika).
+  Bitince tarayıcı kendiliğinden açılır: http://localhost:8080
+  Proje listesinde "Tezim" hazır durur: açın, adını değiştirin ve yazmaya başlayın.
+
+GÜNLÜK KULLANIM
+  - Başlatıcı penceresi açık kaldığı sürece AyakaLeaf çalışır; kapatınca durur.
+  - Projeleriniz "veri" klasöründedir. Yedek almak için AyakaLeaf kapalıyken "veri" klasörünü kopyalayın
+    (ya da projeyi editörden ZIP olarak indirin).
+  - Klasörü taşıyabilirsiniz; Windows'ta yolunda Türkçe karakter ya da boşluk olmayan bir yer
+    (ör. C:\AyakaLeaf) önerilir.
+
+Kılavuz : https://burhanbarakli.github.io/sau-fbe-ayakaleaf/
+Şablon  : https://burhanbarakli.github.io/sau-fbe-doktora-latex-sablonu/
+Kaynak  : https://github.com/burhanbarakli/sau-fbe-ayakaleaf  (AyakaLeaf Pro: AGPL-3.0,
+          https://github.com/ayaka-notes/ayakaleaf-pro)
