@@ -11,15 +11,96 @@ editörü** kurar ve içine **Sakarya Üniversitesi Fen Bilimleri Enstitüsü li
 adını değiştirin ve yazmaya başlayın. Yeni kopyalar için şablon galeride de durur (**Yeni Proje → Diğer şablonlar →
 Tezler**). TeX dağıtımı kurmanız gerekmez.
 
+İki kurulum yolu var:
+
+| | [1. Taşınabilir (önerilen)](#kurulum-1-taşınabilir-önerilen) | [2. Docker](#kurulum-2-docker) |
+|---|---|---|
+| Ne kurulur | Hiçbir şey: zip'i açıp **Baslat**'a çift tıklarsınız | WSL 2 (Windows), Docker, Toolkit |
+| Sistem | Windows 10/11 (64 bit), macOS (Apple Silicon ya da Intel) | Windows (WSL 2), macOS, Linux |
+| İndirme / süre | Tek zip (~1,5 GB), ilk açılış birkaç dakika | ~30 GB imaj, 15–60 dakika |
+| TeX | Seçme paketlerle TeX Live 2026 (şablon + sık kullanılan tez paketleri) | TeX Live 2026 full |
+| Uygun olduğu yer | Kendi bilgisayarında tez yazan öğrenci | Bölüm/laboratuvar sunucusu, çok kullanıcı, Zotero bağlantısı, korumalı derleme |
+
 - **Şablonun kendisi (LaTeX, Word karşılaştırması):** <https://github.com/burhanbarakli/sau-fbe-doktora-latex-sablonu>
 - **Şablonun resimli kullanım kılavuzu:** <https://burhanbarakli.github.io/sau-fbe-doktora-latex-sablonu/>
 - **Bu kurulumun resimli kılavuzu:** <https://burhanbarakli.github.io/sau-fbe-ayakaleaf/>
 - **AyakaLeaf Pro:** <https://ayakaleaf-pro.ayaka.space/> (Overleaf Community Edition tabanlı, ücretsiz, AGPL-3.0)
 
-> Bu depo AyakaLeaf'in kendisini içermez; resmi [AyakaLeaf Toolkit](https://github.com/ayaka-notes/toolkit)'ini
-> indirir, ayarlar ve şablonu yükler. Overleaf, AyakaLeaf ve SAÜ FBE ile resmi bir bağı yoktur.
+> Docker yolu resmi [AyakaLeaf Toolkit](https://github.com/ayaka-notes/toolkit)'ini indirir, ayarlar ve şablonu
+> yükler. Taşınabilir paket, AyakaLeaf Pro'nun resmi Docker imajındaki derlenmiş kodun Windows ve macOS'ta
+> doğrudan çalışacak biçimde paketlenmiş halidir ([`tasinabilir/`](tasinabilir)). Overleaf, AyakaLeaf ve SAÜ FBE
+> ile resmi bir bağı yoktur.
 
-## Nasıl çalışır?
+## Kurulum 1: Taşınabilir (önerilen)
+
+Docker, WSL, TeX dağıtımı, MongoDB ya da başka bir program kurmanız gerekmez; her şey tek klasördedir.
+
+1. Bilgisayarınıza uygun paketi indirin:
+
+   | Bilgisayar | İndir |
+   |---|---|
+   | Windows 10/11 (64 bit) | [**AyakaLeaf-SAU-Windows.zip**](https://github.com/burhanbarakli/sau-fbe-ayakaleaf/releases/latest/download/AyakaLeaf-SAU-Windows.zip) |
+   | Mac, Apple Silicon (M1, M2, M3, M4) | [**AyakaLeaf-SAU-macOS-AppleSilicon.zip**](https://github.com/burhanbarakli/sau-fbe-ayakaleaf/releases/latest/download/AyakaLeaf-SAU-macOS-AppleSilicon.zip) |
+   | Mac, Intel işlemci | [**AyakaLeaf-SAU-macOS-Intel.zip**](https://github.com/burhanbarakli/sau-fbe-ayakaleaf/releases/latest/download/AyakaLeaf-SAU-macOS-Intel.zip) |
+
+   Mac'inizin işlemcisini sol üstteki Apple menüsü → **Bu Mac Hakkında**'da görürsünüz (*Yonga: Apple M…* ya da *İşlemci: Intel*).
+   Bütün sürümler: [Releases](https://github.com/burhanbarakli/sau-fbe-ayakaleaf/releases).
+2. Zip'i açın:
+   - **Windows:** zip'e sağ tıklayın → **Tümünü ayıkla** → hedef olarak `C:\AyakaLeaf` yazın. Klasör yolunda
+     Türkçe karakter (ı, ş, ğ…) olmaması önerilir; LaTeX bu tür yollarda hata verebilir.
+   - **macOS:** zip'e çift tıklayın; `AyakaLeaf-SAU` klasörünü **Uygulamalar**'a ya da ev klasörünüze taşıyın.
+3. `AyakaLeaf-SAU` klasöründe başlatıcıya çift tıklayın:
+   - **Windows:** `Baslat.bat`. *"Windows kişisel bilgisayarınızı korudu"* uyarısı çıkarsa **Ek bilgi → Yine de çalıştır**.
+   - **macOS:** `Baslat.command`. *"Açılamıyor, geliştirici doğrulanamadı"* uyarısı çıkarsa **Sistem Ayarları →
+     Gizlilik ve Güvenlik** → en altta **Yine de Aç** (eski macOS'ta: dosyaya sağ tık → **Aç** → **Aç**).
+     Başlatıcı, paketteki diğer programların engellenmemesi için karantina işaretini kendisi kaldırır.
+4. İlk açılışta pencere sizden **e-posta** ve **şifre** ister: AyakaLeaf'e giriş yapacağınız yönetici hesabıdır
+   (yalnızca bu bilgisayarda geçerli; şifre en az 8 karakter). Sonra şablon yüklenip derlenir; ilk derlemede
+   yazı tipi önbelleği oluştuğu için birkaç dakika sürebilir.
+5. Bitince tarayıcı kendiliğinden <http://localhost:8080> adresini açar. Proje listesinde **Tezim** hazır durur.
+
+**Gereken:** 64 bit Windows 10/11 ya da macOS 12 ve üstü, en az **4 GB** bellek (8 GB önerilir), **6 GB** boş
+disk (paket açılınca ~4 GB, artı projeleriniz). İnternet yalnızca indirirken gerekir.
+
+**Her gün:** `Baslat`'a çift tıklayın; pencere açık kaldığı sürece AyakaLeaf çalışır, kapatınca durur. Pencere
+zaten açıkken yeniden çift tıklarsanız yalnızca tarayıcı açılır.
+
+**Projeleriniz** `AyakaLeaf-SAU/veri` klasöründedir. **Yedek** için AyakaLeaf kapalıyken `veri` klasörünü
+kopyalayın (ya da projeyi editörden **Menü → Kaynak kodunu indir** ile ZIP olarak alın). **Yeni sürüme
+geçmek** için yeni zip'i açın, eski klasördeki `veri` klasörünü yenisinin içine kopyalayın ve yeni `Baslat`'ı
+çalıştırın.
+
+### Nasıl çalışır? (taşınabilir)
+
+```
+ Tarayıcı ──► http://localhost:8080
+                │
+   ┌────────────┴──────── Baslat (app/baslat.mjs, Node.js) ─────────────┐
+   │  AyakaLeaf Pro    12 servis: editör, derleyici, geçmiş, şablon galerisi │
+   │  MongoDB          kullanıcılar, projeler, şablon kayıtları             │
+   │  Garnet           Redis uyumlu: anlık ortak düzenleme (Microsoft, .NET) │
+   │  TeX Live 2026    LuaLaTeX, latexmk, biber (app/texlive)               │
+   └──────────────────────────────────────────────────────────────────────┘
+   Veriler: AyakaLeaf-SAU/veri/    Günlükler: AyakaLeaf-SAU/veri/log/
+```
+
+Paketler GitHub Actions'ta [`tasinabilir.yml`](.github/workflows/tasinabilir.yml) ile üretilir: AyakaLeaf Pro'nun
+resmi Docker imajındaki derlenmiş kod alınır, Windows/macOS farkları için [`yamala.mjs`](tasinabilir/yamala.mjs)
+ile küçük düzeltmeler yapılır, Node.js, MongoDB, Garnet, .NET çalışma zamanı ve taşınabilir TeX Live
+eklenir. Her paket yayınlanmadan önce Windows ve macOS'ta başlatıcı çalıştırılıp şablon derlenerek sınanır.
+
+Taşınabilir pakette derleme korumalı kapta (sandbox) değil, doğrudan bilgisayarınızda çalışır; kendi
+projeleriniz için sorun değildir, ama başkalarına açık bir sunucu kuracaksanız Docker yolunu kullanın. Paketteki
+TeX Live seçme paketlerden oluşur ([liste](tasinabilir/tex-paketleri.txt)); şablonun ve sık kullanılan tez
+paketlerinin (TikZ, pgfplots, siunitx, algoritmalar, biblatex…) dışında bir paket gerekirse
+`app/texlive/bin/<sistem>/tlmgr install <paket>` ile ekleyebilirsiniz.
+
+## Kurulum 2: Docker
+
+Bölüm ya da laboratuvar sunucusu, çok kullanıcı, korumalı derleme, Zotero/Mendeley bağlantısı ya da tam TeX
+Live gerekiyorsa bu yolu kullanın.
+
+### Nasıl çalışır?
 
 ```
  Tarayıcı ──► http://localhost:8080
@@ -46,7 +127,7 @@ Tezler**). TeX dağıtımı kurmanız gerekmez.
 6. Yönetici hesabında henüz proje yoksa şablonun bir kopyasını **Tezim** adıyla hazır proje olarak oluşturur.
    Hesapta zaten proje varsa (adı değiştirilmiş olsa bile) yeni kopya eklemez.
 
-## Gereksinimler
+### Gereksinimler
 
 | | Windows 10/11 | macOS | Linux (Ubuntu/Debian) |
 |---|---|---|---|
@@ -58,8 +139,6 @@ Tezler**). TeX dağıtımı kurmanız gerekmez.
 | İnternet | Yalnızca kurulumda (imajlar ve şablon indirilir); sonrası çevrimdışı çalışır | Aynı | Aynı |
 
 Bilgisayarınıza MiKTeX/MacTeX, MongoDB ya da Redis kurmanız **gerekmez**; hepsi Docker kaplarında çalışır.
-
-## Kurulum
 
 ### Windows
 
@@ -124,6 +203,8 @@ başlatmalar saniyeler içinde olur.
 
 ## Kullanım
 
+Bu bölüm iki kurulum yolu için de geçerlidir.
+
 1. <http://localhost:8080> → yönetici e-postanız ve şifrenizle giriş yapın.
 2. Proje listesinde **Tezim** hazır durur. Adını değiştirmek için satırın onay kutusunu işaretleyip
    **Daha fazla → Adlandır**'ı seçin (ya da editörde üstteki proje adına tıklayın). Projeye tıklayıp açın;
@@ -169,7 +250,7 @@ HTTPS ayarlanmalıdır; bkz. [AyakaLeaf belgeleri](https://ayakaleaf-pro.ayaka.s
 
 > Projenizde `bib-ayar.tex` yoksa proje bu dosya eklenmeden önceki şablon sürümünden açılmıştır. Dosyayı
 > [GitHub'dan](https://github.com/burhanbarakli/sau-fbe-doktora-latex-sablonu/blob/main/sablon/bib-ayar.tex)
-> indirip **Yeni Dosya → Yükle** ile ekleyin; galeriyi güncellemek için `./kur.sh --sablon`.
+> indirip **Yeni Dosya → Yükle** ile ekleyin. Docker yolunda galeriyi güncellemek için `./kur.sh --sablon`.
 
 **Kaynak arama:** `\parencite{` (ya da `\cite{`, `\textcite{`) yazıp **Ctrl+Space**'e basın. Açılan
 **Bu projedeki .bib dosyalarında ara** penceresinde yazar, başlık ya da anahtarın birkaç harfini yazın ve
@@ -225,8 +306,9 @@ yapılandırmak için AyakaLeaf belgelerine bakın:
 | [MCP sunucusu](https://ayakaleaf-pro.ayaka.space/on-premises/configuration/overleaf-toolkit/integrations/mcp-server.md) | Claude Code gibi yapay zekâ araçlarının projeyi okuyup düzenlemesine ve derlemesine izin verir. |
 | [Yapay zekâ asistanı](https://ayakaleaf-pro.ayaka.space/on-premises/readme/features-and-copyright.md) | Proje hakkında sohbet ve derleme hatalarını açıklama. |
 
-## Günlük kullanım
+## Günlük kullanım (Docker)
 
+Taşınabilir pakette yalnızca `Baslat`'a çift tıklarsınız (bkz. [Kurulum 1](#kurulum-1-taşınabilir-önerilen)). Docker yolunda:
 Windows'ta önce Docker Desktop'ı açın (Docker Engine yolundaysanız bir Ubuntu penceresi açmanız yeter; kaplar
 kendiliğinden başlar), sonra gerekirse Ubuntu/Terminal'de:
 
@@ -254,6 +336,19 @@ alabilirsiniz.
 
 ## Sorun giderme
 
+**Taşınabilir paket:**
+
+| Belirti | Çözüm |
+|---|---|
+| Pencere "Şu portlar başka bir program tarafından kullanılıyor" deyip kapanıyor | Bilgisayarda MongoDB, Redis ya da Docker'lı AyakaLeaf/Overleaf çalışıyor. Onları durdurup `Baslat`'ı yeniden açın. 8080 doluysa paket kendiliğinden 8081, 8082… kullanır; adres pencerede yazar. |
+| macOS: "Baslat.command açılamıyor" | **Sistem Ayarları → Gizlilik ve Güvenlik → Yine de Aç**. Olmazsa Terminal'de `xattr -dr com.apple.quarantine ~/AyakaLeaf-SAU` (klasörün yerini yazın) ve yeniden çift tıklayın. |
+| Windows: pencere açılıp hemen kapanıyor | Zip'i açmadan zip'in içinden çalıştırmışsınızdır: önce **Tümünü ayıkla**. |
+| Derleme hata veriyor, günlükte Türkçe karakterli bir klasör yolu var | Klasörü `C:\AyakaLeaf` gibi Türkçe karakter içermeyen bir yere taşıyın. |
+| Şablon yüklenemedi (ilk kurulum) | AyakaLeaf yine çalışır; pencereyi kapatıp `Baslat`'ı yeniden açınca kurulum tekrar denenir. Ayrıntı: `veri/log/` içindeki günlükler (`web.log`, `clsi.log`). |
+| "... .sty not found" | Paket taşınabilir TeX Live'da yok: `app/texlive/bin/windows/tlmgr install <paket>` (macOS: `app/texlive/bin/universal-darwin/tlmgr`). |
+
+**Docker:**
+
 | Belirti | Çözüm |
 |---|---|
 | `docker: command not found` / `Cannot connect to the Docker daemon` (Windows) | Docker Desktop açık mı? *Settings → Resources → WSL Integration*'da Ubuntu açık mı? Ubuntu penceresini kapatıp açın. Docker Engine kurduysanız: `sudo service docker start`. |
@@ -272,9 +367,9 @@ alabilirsiniz.
 Ayrıntılı kurulum sorunları: AyakaLeaf'in [Windows](https://ayakaleaf-pro.ayaka.space/on-premises/installation/using-docker-compose/windows/troubleshooting)
 ve [macOS](https://ayakaleaf-pro.ayaka.space/on-premises/installation/using-docker-compose/macos/troubleshooting) sorun giderme sayfaları.
 
-## Claude ile kurulum
+## Claude ile kurulum (Docker yolu)
 
-[Claude Code](https://claude.com/claude-code)'u (Claude masaüstü uygulamasındaki **Code** sekmesi ya da terminalde
+Taşınabilir paket için yardım gerekmez; aşağıdaki istem Docker yolu içindir. [Claude Code](https://claude.com/claude-code)'u (Claude masaüstü uygulamasındaki **Code** sekmesi ya da terminalde
 `claude`) açıp aşağıdaki istemi yapıştırın:
 
 ```text
@@ -292,7 +387,10 @@ Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'yi baştan sona
 ## Dosyalar
 
 ```
-kur.sh                kurulum betiği (Linux, Windows WSL 2, macOS)
+tasinabilir/          taşınabilir paket: Baslat.bat/.command, baslat.mjs, sablon-yukle.mjs, yamala.mjs,
+                      tex-paketleri.txt (paketler Releases'te)
+.github/workflows/    tasinabilir.yml: paketleri üretir, Windows/macOS'ta sınar, yayınlar
+kur.sh                Docker kurulum betiği (Linux, Windows WSL 2, macOS)
 sablonu-yayinla.py    şablonu galeriye yükler/günceller (yalnızca Python standart kitaplığı)
 docs/                 resimli kurulum ve kullanım kılavuzu (GitHub Pages)
 CLAUDE.md             Claude Code için proje notları
@@ -301,5 +399,6 @@ CLAUDE.md             Claude Code için proje notları
 ## Lisans
 
 Bu depodaki betikler ve belgeler MIT lisanslıdır. AyakaLeaf Pro ve Toolkit kendi lisanslarıyla
-(AGPL-3.0) ayrıca indirilir. Tez şablonu MIT lisanslıdır; Word şablonu ve tez yazım kılavuzunun hakları
+(AGPL-3.0) ayrıca indirilir; taşınabilir paketteki AyakaLeaf Pro derlemesi AGPL-3.0'dır (kaynak:
+<https://github.com/ayaka-notes/ayakaleaf-pro>), diğer bileşenlerin lisansları paketteki `app/LISANSLAR.txt`'dedir. Tez şablonu MIT lisanslıdır; Word şablonu ve tez yazım kılavuzunun hakları
 SAÜ FBE'ye aittir.
