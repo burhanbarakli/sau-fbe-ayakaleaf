@@ -7,14 +7,14 @@
 //   texlive/   tasinabilir TeX Live (yoksa sistemdeki LuaLaTeX kullanilir)
 //   ../veri/   veritabani, projeler, gunlukler (ilk calismada olusur)
 // Ortam degiskenleri: AYA_PORT (8080), AYA_VERI, AYA_TARAYICI=0 (tarayici acma),
-//   AYA_YONETICI_EPOSTA + AYA_YONETICI_SIFRE (sormadan kur), AYA_KURULUMDAN_SONRA_CIK=1 (test icin).
+//   AYA_YONETICI_EPOSTA, AYA_YONETICI_SIFRE (ilk kurulum hesabi; verilmezse tez@sau.local / sakarya2026),
+//   AYA_KURULUMDAN_SONRA_CIK=1 (test icin).
 import { spawn, spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import http from 'node:http'
 import net from 'node:net'
 import crypto from 'node:crypto'
-import readline from 'node:readline'
 import { fileURLToPath } from 'node:url'
 import { sablonYukle } from './sablon-yukle.mjs'
 
@@ -60,14 +60,6 @@ function tarayiciAc(url) {
   const [k, a] = WIN ? ['cmd', ['/c', 'start', '', url]] : [process.platform === 'darwin' ? 'open' : 'xdg-open', [url]]
   try { spawn(k, a, { detached: true, stdio: 'ignore', windowsHide: true }).unref() } catch {}
 }
-function sor(soru, gizli = false) {
-  return new Promise(ok => {
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true })
-    if (gizli) rl._writeToOutput = s => rl.output.write(s.startsWith(soru) ? soru : s.replace(/[^\r\n]/g, '*'))
-    rl.question(soru, c => { rl.close(); ok(c.trim()) })
-  })
-}
-
 console.log('AyakaLeaf Pro + SAÜ FBE tez şablonu (taşınabilir, Docker\'sız)\n')
 
 // --- ayni anda ikinci kopya: zaten calisiyorsa tarayiciyi acip cik
@@ -105,25 +97,13 @@ for (const d of ['data/compiles', 'data/output', 'data/cache', 'data/template_fi
 }
 if (!fs.existsSync(path.join(VERI, 'site_status'))) fs.writeFileSync(path.join(VERI, 'site_status'), '')
 
-// --- ilk kurulum bilgileri (servisler baslamadan once sorulur)
-// Ilk kurulumda hazir yonetici hesabi; site yalnizca bu bilgisayardan acilir, sifre Hesap Ayarlari'ndan degisir.
+// --- ilk kurulum: hazir yonetici hesabi (sorulmaz). Site yalnizca bu bilgisayardan acilir (127.0.0.1);
+// kullanici sifreyi AyakaLeaf'te Hesap -> Hesap Ayarlari'ndan degistirebilir.
 const VARSAYILAN_EPOSTA = 'tez@sau.local', VARSAYILAN_SIFRE = 'sakarya2026'
 let kurulumBilgisi = null, kurulum = null
 try { kurulum = JSON.parse(fs.readFileSync(KURULUM, 'utf8')) } catch {}
 if (!kurulum) {
-  let email = process.env.AYA_YONETICI_EPOSTA || VARSAYILAN_EPOSTA, sifre = process.env.AYA_YONETICI_SIFRE || VARSAYILAN_SIFRE
-  if (!email || !sifre) {
-    console.log('İlk kurulum: AyakaLeaf\'e gireceğiniz yönetici hesabını belirleyin (yalnızca bu bilgisayarda geçerli).')
-    while (!/^[^@\s]+@[^@\s]+$/.test(email || '')) email = await sor('  E-posta: ')
-    for (;;) {
-      sifre = await sor('  Şifre (en az 8 karakter): ', true)
-      if (sifre.length < 8) { console.log('  Şifre en az 8 karakter olmalı.'); continue }
-      if ((await sor('  Şifre (tekrar): ', true)) === sifre) break
-      console.log('  Şifreler aynı değil.')
-    }
-    console.log('')
-  }
-  kurulumBilgisi = { email, sifre }
+  kurulumBilgisi = { email: process.env.AYA_YONETICI_EPOSTA || VARSAYILAN_EPOSTA, sifre: process.env.AYA_YONETICI_SIFRE || VARSAYILAN_SIFRE }
 }
 
 // --- gizli anahtarlar (Docker'daki 100_generate_secrets.sh karsiligi)
@@ -370,6 +350,6 @@ if (kurulumBilgisi) {
 }
 
 console.log(`\nTarayıcıda açın: ${SITE}`)
-if (kurulum?.email) console.log(`Giriş: ${kurulum.email}` + (kurulum.varsayilanSifre ? ` / ${VARSAYILAN_SIFRE}  (ilk şifre; değiştirmek için sağ üstte Hesap -> Hesap Ayarları)` : ''))
+if (kurulum?.email) console.log(`Giriş: ${kurulum.email}` + (kurulum.varsayilanSifre ? `  ilk şifre: ${VARSAYILAN_SIFRE} (değiştirdiyseniz kendi şifreniz; değiştirmek için sağ üstte Hesap -> Hesap Ayarları)` : ''))
 console.log('Bu pencere açık kaldığı sürece AyakaLeaf çalışır. Kapatmak için Ctrl+C\'ye basın ya da pencereyi kapatın.')
 tarayiciAc(SITE)

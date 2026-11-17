@@ -56,10 +56,17 @@ Docker, WSL, TeX dağıtımı, MongoDB ya da başka bir program kurmanız gerekm
    - **macOS:** `Baslat.command`. *"Açılamıyor, geliştirici doğrulanamadı"* uyarısı çıkarsa **Sistem Ayarları →
      Gizlilik ve Güvenlik** → en altta **Yine de Aç** (eski macOS'ta: dosyaya sağ tık → **Aç** → **Aç**).
      Başlatıcı, paketteki diğer programların engellenmemesi için karantina işaretini kendisi kaldırır.
-4. İlk açılışta pencere sizden **e-posta** ve **şifre** ister: AyakaLeaf'e giriş yapacağınız yönetici hesabıdır
-   (yalnızca bu bilgisayarda geçerli; şifre en az 8 karakter). Sonra şablon yüklenip derlenir; ilk derlemede
-   yazı tipi önbelleği oluştuğu için birkaç dakika sürebilir.
-5. Bitince tarayıcı kendiliğinden <http://localhost:8080> adresini açar. Proje listesinde **Tezim** hazır durur.
+4. İlk açılışta hiçbir şey sorulmaz: şablon yüklenip derlenir. İlk derlemede yazı tipi önbelleği oluştuğu
+   için birkaç dakika sürebilir.
+5. Bitince tarayıcı kendiliğinden <http://localhost:8080> adresini açar. Şu bilgilerle giriş yapın; proje
+   listesinde **Tezim** hazır durur:
+
+   | E-posta | Şifre |
+   |---|---|
+   | `tez@sau.local` | `sakarya2026` |
+
+   Şifreyi değiştirmek için sağ üstte **Hesap → Hesap Ayarları → Şifre Değiştir** (aynı sayfada e-postayı da
+   değiştirebilirsiniz). Site yalnızca bu bilgisayardan açılır; aynı ağdaki başkaları erişemez.
 
 **Gereken:** 64 bit Windows 10/11 ya da macOS 12 ve üstü, en az **4 GB** bellek (8 GB önerilir), **6 GB** boş
 disk (paket açılınca ~4 GB, artı projeleriniz). İnternet yalnızca indirirken gerekir.
@@ -196,8 +203,10 @@ cd sau-fbe-ayakaleaf
 
 ### Kurulum sırasında sorulanlar
 
-- **Yönetici e-postası ve şifresi:** AyakaLeaf'e giriş bilgileriniz olur (yalnızca bu kurulumda geçerli;
-  şifre en az 8 karakter). Daha önce yönetici oluşturduysanız aynı bilgileri girin.
+- **Yönetici e-postası ve şifresi:** AyakaLeaf'e giriş bilgileriniz olur. İkisinde de **Enter**'a basarsanız
+  varsayılan hesap kullanılır: `tez@sau.local` / `sakarya2026` (sonra **Hesap → Hesap Ayarları**'ndan
+  değiştirin). Kendi şifrenizi yazacaksanız en az 8 karakter olmalı ve e-postaya benzememeli. Daha önce
+  yönetici oluşturduysanız aynı bilgileri girin. Sunucuyu ağa açacaksanız varsayılan şifreyi mutlaka değiştirin.
 - **Docker Engine kurulsun mu?** Yalnızca Linux/WSL'de Docker yoksa sorulur.
 
 İlk kurulum, TeX Live imajının boyutu nedeniyle bağlantınıza göre 15–60 dakika sürebilir. Sonraki
@@ -207,7 +216,8 @@ başlatmalar saniyeler içinde olur.
 
 Bu bölüm iki kurulum yolu için de geçerlidir.
 
-1. <http://localhost:8080> → yönetici e-postanız ve şifrenizle giriş yapın.
+1. <http://localhost:8080> → yönetici e-postanız ve şifrenizle giriş yapın (varsayılan: `tez@sau.local` /
+   `sakarya2026`; değiştirmek için **Hesap → Hesap Ayarları → Şifre Değiştir**).
 2. Proje listesinde **Tezim** hazır durur. Adını değiştirmek için satırın onay kutusunu işaretleyip
    **Daha fazla → Adlandır**'ı seçin (ya da editörde üstteki proje adına tıklayın). Projeye tıklayıp açın;
    derleyici LuaLaTeX olarak ayarlıdır.
@@ -385,9 +395,9 @@ Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'deki "Kurulum 1
 2. En az 6 GB boş disk olduğunu ve 8080, 4000, 3000-3100, 27017, 6379 portlarını başka bir programın (MongoDB, Redis, Docker'lı Overleaf/AyakaLeaf) kullanmadığını kontrol et. Kullanan varsa bana söyle; kapatmayı bana bırak.
 3. Zip'i https://github.com/burhanbarakli/sau-fbe-ayakaleaf/releases/latest/download/<zip adı> adresinden İndirilenler klasörüme indir (~1,2 GB).
 4. Zip'i aç. Windows'ta C:\AyakaLeaf klasörünü oluşturup Windows'un kendi tar'ıyla aç: `C:\Windows\System32\tar.exe -xf <zip> -C C:\AyakaLeaf` (PowerShell'in Expand-Archive'ı çok yavaştır; Git Bash'in tar'ı zip açamaz). macOS'ta `ditto -x -k <zip> ~/AyakaLeaf` ile aç ve `xattr -dr com.apple.quarantine ~/AyakaLeaf/AyakaLeaf-SAU` ile karantina işaretini kaldır. Hedefte zaten bir AyakaLeaf-SAU klasörü varsa üzerine yazma; içindeki veri klasörü projelerimdir, önce bana sor.
-5. Başlatıcıyı ayrı bir pencerede aç: Windows'ta `start "" "C:\AyakaLeaf\AyakaLeaf-SAU\Baslat.bat"`, macOS'ta `open ~/AyakaLeaf/AyakaLeaf-SAU/Baslat.command`. Pencere yönetici e-postası ve şifresi isteyecek: şifreyi sohbete yazdırma, açılan pencereye benim girmemi iste.
+5. Başlatıcıyı ayrı bir pencerede aç: Windows'ta `start "" "C:\AyakaLeaf\AyakaLeaf-SAU\Baslat.bat"`, macOS'ta `open ~/AyakaLeaf/AyakaLeaf-SAU/Baslat.command`. Hiçbir şey sormaz; şablonu yükleyip varsayılan hesabı (tez@sau.local / sakarya2026) oluşturur.
 6. Pencerede "KURULUM TAMAM" yazdığını bana sor, sonra http://localhost:8080/login adresinin yanıt verdiğini kontrol et. Sorun çıkarsa README'deki "Sorun giderme" bölümünün taşınabilir paket tablosuna ve AyakaLeaf-SAU/veri/log/ içindeki günlüklere (web.log, clsi.log) bak.
-7. Bitince bana her gün nasıl başlatacağımı (Baslat'a çift tıklama), projelerimin nerede durduğunu (AyakaLeaf-SAU/veri) ve nasıl yedek alacağımı özetle.
+7. Bitince bana giriş bilgilerini ve şifreyi Hesap → Hesap Ayarları'ndan nasıl değiştireceğimi, her gün nasıl başlatacağımı (Baslat'a çift tıklama), projelerimin nerede durduğunu (AyakaLeaf-SAU/veri) ve nasıl yedek alacağımı özetle.
 ```
 
 ### Kurulum 2: Docker
@@ -399,7 +409,7 @@ Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'deki "Kurulum 2
 1. İşletim sistemimi belirle. Windows'taysam WSL 2 ve Ubuntu kurulu mu bak (`wsl --list --verbose`); değilse kurulum komutunu bana göster, yönetici PowerShell'de benim çalıştırmamı iste.
 2. Docker'ın çalıştığını doğrula (Windows'ta Ubuntu içinden `docker version`; Client ve Server görünmeli). Yoksa README'deki seçenekleri anlat ve hangisini istediğimi sor. Docker Desktop'ı ve lisans onayını bana bırak; Ubuntu içine Docker Engine kurulacaksa komutları önce göster.
 3. Gereken araçları (git curl openssl python3 perl gawk; macOS'ta Homebrew ve gnu-sed) kontrol et, eksikleri onayımla kur.
-4. Depoyu ev klasörüme (Windows'ta Ubuntu'nun ev klasörüne, /mnt/c altına değil) klonla ve `./kur.sh`'ı çalıştır. Yönetici e-postası ve şifresi sorulunca bana sor; şifreyi sohbete yazdırma, betiğin istemine benim girmemi iste.
+4. Depoyu ev klasörüme (Windows'ta Ubuntu'nun ev klasörüne, /mnt/c altına değil) klonla ve `./kur.sh`'ı çalıştır. Yönetici e-postası ve şifresi sorulunca bana sor: Enter'a basarsam varsayılan hesap (tez@sau.local / sakarya2026) kullanılır; kendi şifremi kullanacaksam sohbete yazdırma, betiğin istemine benim girmemi iste.
 5. İmajlar inerken ilerlemeyi takip et; hata olursa README'deki sorun giderme tablosuna ve `bin/docker-compose logs` çıktısına göre düzelt.
 6. Bitince http://localhost:8080/templates/thesis adresinde şablonun, proje listesinde de hazır "Tezim" projesinin durduğunu doğrula ve bana günlük kullanım komutlarını (bin/start, bin/stop) özetle.
 ```

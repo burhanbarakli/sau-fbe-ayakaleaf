@@ -11,7 +11,8 @@ Bu depo, AyakaLeaf Pro'yu (Overleaf CE tabanlı, kendi sunucunda çalışan LaTe
 - Şablonun kaynağı: https://github.com/burhanbarakli/sau-fbe-doktora-latex-sablonu (`sablon/` klasörü).
   `sablonu-yayinla.py` bunu indirir, proje olarak yükler, derleyiciyi LuaLaTeX yapar ve `/template/new/<id>`
   ile yayınlar. Şablonun biçim dosyalarını bu depoda değiştirme; değişiklik o depoda yapılır.
-- Yönetici şifresini sohbete yazdırma, komut satırına açık yazma; betik `getpass` ile sorar.
+- Varsayılan yönetici hesabı `tez@sau.local` / `sakarya2026` (taşınabilir paket sormadan bununla kurar; `kur.sh`'ta
+  Enter). Kullanıcı kendi şifresini girecekse onu sohbete yazdırma, komut satırına açık yazma; betik `getpass` ile sorar.
 - Docker Desktop kurulumu ve lisans onayı kullanıcıya aittir. `sudo` gerektiren her komutu önce göster.
 - Günlükler: `cd ~/ayakaleaf-toolkit && bin/docker-compose logs --tail=100 sharelatex`, derleyici: `bin/logs -f clsi`.
 - **Taşınabilir paket (Kurulum 1, önerilen):** `tasinabilir/` + `.github/workflows/tasinabilir.yml`. İş akışı

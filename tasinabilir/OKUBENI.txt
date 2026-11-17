@@ -12,9 +12,11 @@ BAŞLATMA
             Güvenlik -> en altta "Yine de Aç". (Eski macOS'ta: dosyaya sağ tık -> Aç -> Aç.)
 
 İLK AÇILIŞ
-  Pencere sizden bir e-posta ve şifre ister: bu, AyakaLeaf'e giriş yapacağınız yönetici hesabıdır
-  (yalnızca bu bilgisayarda geçerli). Sonra şablon yüklenir ve derlenir (birkaç dakika).
-  Bitince tarayıcı kendiliğinden açılır: http://localhost:8080
+  Hiçbir şey sorulmaz: şablon yüklenir ve derlenir (birkaç dakika), sonra tarayıcı kendiliğinden
+  açılır: http://localhost:8080
+  Giriş bilgileri:   e-posta  tez@sau.local      şifre  sakarya2026
+  Şifreyi değiştirmek için AyakaLeaf'te sağ üstte Hesap -> Hesap Ayarları -> Şifre Değiştir.
+  (Site yalnızca bu bilgisayardan açılır; aynı ağdaki başkaları erişemez.)
   Proje listesinde "Tezim" hazır durur: açın, adını değiştirin ve yazmaya başlayın.
 
 GÜNLÜK KULLANIM

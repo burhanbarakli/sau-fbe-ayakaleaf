@@ -297,13 +297,13 @@ jobs:
         env:
           AYA_TARAYICI: '0'
           AYA_KURULUMDAN_SONRA_CIK: '1'
-          AYA_YONETICI_EPOSTA: yonetici@yerel.test
         run: |
-          export AYA_YONETICI_SIFRE="Aa1$(openssl rand -hex 12)"
+          # e-posta/şifre verilmez: kullanıcı gibi varsayılan hesapla (tez@sau.local) kurulmalı
           cd "$KOK"
           if [ "$RUNNER_OS" = Windows ]; then cmd //c "echo.| Baslat.bat" 2>&1 | tee ../baslat.out
           else ./Baslat.command < /dev/null 2>&1 | tee ../baslat.out; fi
           grep -q "KURULUM TAMAM" ../baslat.out
+          grep -q "Yönetici hesabı oluşturuldu: tez@sau.local" ../baslat.out
       - name: Sayfa sayısı
         run: |
           f=$(find "$KOK/veri/data/compiles" -name output.log | head -1)
@@ -348,11 +348,10 @@ jobs:
         env:
           AYA_TARAYICI: '0'
           AYA_KURULUMDAN_SONRA_CIK: '1'
-          AYA_YONETICI_EPOSTA: yonetici@yerel.test
         run: |
           ditto -x -k *.zip "$HOME/AyakaLeaf"; cd "$HOME/AyakaLeaf/AyakaLeaf-SAU"
           for d in /usr/local/share/dotnet "$HOME/.dotnet"; do [ -e "$d" ] && sudo mv "$d" "$d.gizli"; done
-          export DOTNET_ROOT= AYA_YONETICI_SIFRE="Aa1$(openssl rand -hex 12)"
+          export DOTNET_ROOT=
           ./Baslat.command < /dev/null 2>&1 | tee baslat.out
           grep -q "KURULUM TAMAM" baslat.out
           grep -o "Output written on [^)]*)" $(find veri/data/compiles -name output.log | head -1)

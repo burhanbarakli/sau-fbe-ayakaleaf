@@ -199,13 +199,10 @@ figure.wide{max-width:980px;margin:14px 0}
   <li><b>macOS:</b> <code>Baslat.command</code>'a çift tıklayın. <i>“Açılamıyor, geliştirici doğrulanamadı”</i> uyarısı çıkarsa <b>Sistem Ayarları → Gizlilik ve Güvenlik</b> → en altta <b>Yine de Aç</b> (eski macOS'ta: dosyaya sağ tık → <b>Aç</b> → <b>Aç</b>). Başlatıcı, paketteki diğer programların engellenmemesi için karantina işaretini kendisi kaldırır.</li>
 </ul>
 <h3>4. İlk açılış</h3>
-<p>Pencere sizden <b>e-posta</b> ve <b>şifre</b> ister: AyakaLeaf'e giriş yapacağınız yönetici hesabıdır (yalnızca bu bilgisayarda geçerli; şifre en az 8 karakter, yazarken <code>*</code> görünür). Sonra şablon yüklenip derlenir; ilk derlemede yazı tipi önbelleği oluştuğu için birkaç dakika sürebilir. Bitince tarayıcı kendiliğinden <code>http://localhost:8080</code> adresini açar ve proje listesinde <b>Tezim</b> hazır durur.</p>
+<p>Hiçbir şey sorulmaz: şablon yüklenip derlenir (ilk derlemede yazı tipi önbelleği oluştuğu için birkaç dakika sürebilir). Bitince tarayıcı kendiliğinden <code>http://localhost:8080</code> adresini açar. Şu bilgilerle giriş yapın; proje listesinde <b>Tezim</b> hazır durur:</p>
+<table><tr><th>E-posta</th><th>Şifre</th></tr><tr><td><code>tez@sau.local</code></td><td><code>sakarya2026</code></td></tr></table>
+<p>Şifreyi değiştirmek için sağ üstte <b>Hesap → Hesap Ayarları → Şifre Değiştir</b> (aynı sayfada e-postayı da değiştirebilirsiniz). Site yalnızca bu bilgisayardan açılır; aynı ağdaki başkaları erişemez.</p>
 <pre><code>AyakaLeaf Pro + SAÜ FBE tez şablonu (taşınabilir, Docker'sız)
-
-İlk kurulum: AyakaLeaf'e gireceğiniz yönetici hesabını belirleyin (yalnızca bu bilgisayarda geçerli).
-  E-posta: ad.soyad@ogr.sakarya.edu.tr
-  Şifre (en az 8 karakter): ********
-  Şifre (tekrar): ********
 
 MongoDB başlatılıyor...
 Garnet (Redis) başlatılıyor...
@@ -220,6 +217,7 @@ AyakaLeaf hazır: http://localhost:8080
 KURULUM TAMAM
 
 Tarayıcıda açın: http://localhost:8080
+Giriş: tez@sau.local  ilk şifre: sakarya2026 (değiştirdiyseniz kendi şifreniz; ...)
 Bu pencere açık kaldığı sürece AyakaLeaf çalışır.</code></pre>
 <h3>Gereken</h3>
 <p>64 bit Windows 10/11 ya da macOS 12 ve üstü, en az <b>4 GB</b> bellek (8 GB önerilir), <b>6 GB</b> boş disk (paket açılınca ~4 GB, artı projeleriniz). İnternet yalnızca indirirken gerekir.</p>
@@ -325,7 +323,7 @@ cd sau-fbe-ayakaleaf
 ./kur.sh</code></pre>
 <h3>Kurulum sırasında sorulanlar</h3>
 <ul>
-  <li><b>Yönetici e-postası ve şifresi:</b> AyakaLeaf giriş bilgileriniz olur (yalnızca bu kurulumda geçerli; şifre en az 8 karakter, e-postaya benzememeli).</li>
+  <li><b>Yönetici e-postası ve şifresi:</b> AyakaLeaf giriş bilgileriniz olur. İkisinde de <b>Enter</b>'a basarsanız varsayılan hesap kullanılır: <code>tez@sau.local</code> / <code>sakarya2026</code> (sonra <b>Hesap → Hesap Ayarları</b>'ndan değiştirin). Kendi şifreniz en az 8 karakter olmalı, e-postaya benzememeli. Sunucuyu ağa açacaksanız varsayılan şifreyi mutlaka değiştirin.</li>
   <li><b>Docker Engine kurulsun mu?</b> Yalnızca Linux/WSL'de Docker yoksa sorulur.</li>
 </ul>
 <p>İlk kurulum, TeX Live imajının boyutu nedeniyle bağlantınıza göre 15–60 dakika sürebilir. Sonraki başlatmalar saniyeler içinde olur. Port 8080 doluysa: <code>AYAKALEAF_PORT=8090 ./kur.sh</code>.</p>
@@ -342,9 +340,9 @@ Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'deki "Kurulum 1
 2. En az 6 GB boş disk olduğunu ve 8080, 4000, 3000-3100, 27017, 6379 portlarını başka bir programın (MongoDB, Redis, Docker'lı Overleaf/AyakaLeaf) kullanmadığını kontrol et. Kullanan varsa bana söyle; kapatmayı bana bırak.
 3. Zip'i https://github.com/burhanbarakli/sau-fbe-ayakaleaf/releases/latest/download/&lt;zip adı&gt; adresinden İndirilenler klasörüme indir (~1,2 GB).
 4. Zip'i aç. Windows'ta C:\AyakaLeaf klasörünü oluşturup Windows'un kendi tar'ıyla aç: `C:\Windows\System32\tar.exe -xf &lt;zip&gt; -C C:\AyakaLeaf` (PowerShell'in Expand-Archive'ı çok yavaştır; Git Bash'in tar'ı zip açamaz). macOS'ta `ditto -x -k &lt;zip&gt; ~/AyakaLeaf` ile aç ve `xattr -dr com.apple.quarantine ~/AyakaLeaf/AyakaLeaf-SAU` ile karantina işaretini kaldır. Hedefte zaten bir AyakaLeaf-SAU klasörü varsa üzerine yazma; içindeki veri klasörü projelerimdir, önce bana sor.
-5. Başlatıcıyı ayrı bir pencerede aç: Windows'ta `start "" "C:\AyakaLeaf\AyakaLeaf-SAU\Baslat.bat"`, macOS'ta `open ~/AyakaLeaf/AyakaLeaf-SAU/Baslat.command`. Pencere yönetici e-postası ve şifresi isteyecek: şifreyi sohbete yazdırma, açılan pencereye benim girmemi iste.
+5. Başlatıcıyı ayrı bir pencerede aç: Windows'ta `start "" "C:\AyakaLeaf\AyakaLeaf-SAU\Baslat.bat"`, macOS'ta `open ~/AyakaLeaf/AyakaLeaf-SAU/Baslat.command`. Hiçbir şey sormaz; şablonu yükleyip varsayılan hesabı (tez@sau.local / sakarya2026) oluşturur.
 6. Pencerede "KURULUM TAMAM" yazdığını bana sor, sonra http://localhost:8080/login adresinin yanıt verdiğini kontrol et. Sorun çıkarsa README'deki "Sorun giderme" bölümünün taşınabilir paket tablosuna ve AyakaLeaf-SAU/veri/log/ içindeki günlüklere (web.log, clsi.log) bak.
-7. Bitince bana her gün nasıl başlatacağımı (Baslat'a çift tıklama), projelerimin nerede durduğunu (AyakaLeaf-SAU/veri) ve nasıl yedek alacağımı özetle.</code></pre>
+7. Bitince bana giriş bilgilerini ve şifreyi Hesap → Hesap Ayarları'ndan nasıl değiştireceğimi, her gün nasıl başlatacağımı (Baslat'a çift tıklama), projelerimin nerede durduğunu (AyakaLeaf-SAU/veri) ve nasıl yedek alacağımı özetle.</code></pre>
 <h3>Kurulum 2: Docker</h3>
 <pre class="prompt"><code>Bilgisayarıma SAÜ FBE tez şablonu gömülü AyakaLeaf Pro'yu Docker ile (Kurulum 2) kurmamı istiyorum.
 Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'deki "Kurulum 2: Docker" bölümünü oku ve ona göre ilerle).
@@ -352,14 +350,14 @@ Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'deki "Kurulum 2
 1. İşletim sistemimi belirle. Windows'taysam WSL 2 ve Ubuntu kurulu mu bak (`wsl --list --verbose`); değilse kurulum komutunu bana göster, yönetici PowerShell'de benim çalıştırmamı iste.
 2. Docker'ın çalıştığını doğrula (Windows'ta Ubuntu içinden `docker version`; Client ve Server görünmeli). Yoksa README'deki seçenekleri anlat ve hangisini istediğimi sor. Docker Desktop'ı ve lisans onayını bana bırak; Ubuntu içine Docker Engine kurulacaksa komutları önce göster.
 3. Gereken araçları (git curl openssl python3 perl gawk; macOS'ta Homebrew ve gnu-sed) kontrol et, eksikleri onayımla kur.
-4. Depoyu ev klasörüme (Windows'ta Ubuntu'nun ev klasörüne, /mnt/c altına değil) klonla ve `./kur.sh`'ı çalıştır. Yönetici e-postası ve şifresi sorulunca bana sor; şifreyi sohbete yazdırma, betiğin istemine benim girmemi iste.
+4. Depoyu ev klasörüme (Windows'ta Ubuntu'nun ev klasörüne, /mnt/c altına değil) klonla ve `./kur.sh`'ı çalıştır. Yönetici e-postası ve şifresi sorulunca bana sor: Enter'a basarsam varsayılan hesap (tez@sau.local / sakarya2026) kullanılır; kendi şifremi kullanacaksam sohbete yazdırma, betiğin istemine benim girmemi iste.
 5. İmajlar inerken ilerlemeyi takip et; hata olursa README'deki sorun giderme tablosuna ve `bin/docker-compose logs` çıktısına göre düzelt.
 6. Bitince http://localhost:8080/templates/thesis adresinde şablonun, proje listesinde de hazır "Tezim" projesinin durduğunu doğrula ve bana günlük kullanım komutlarını (bin/start, bin/stop) özetle.</code></pre>
 </section>
 
 <section id="giris">
 <h2>İlk giriş</h2>
-<p><a href="http://localhost:8080">http://localhost:8080</a> adresinde kurulumda verdiğiniz yönetici e-postası ve şifresiyle giriş yapın. Arayüz Türkçedir.</p>
+<p><a href="http://localhost:8080">http://localhost:8080</a> adresinde yönetici e-postası ve şifresiyle giriş yapın. Taşınabilir pakette (ve Docker kurulumunda Enter'a bastıysanız) bunlar <code>tez@sau.local</code> / <code>sakarya2026</code>'dir; değiştirmek için sağ üstte <b>Hesap → Hesap Ayarları → Şifre Değiştir</b>. Arayüz Türkçedir.</p>
 <figure class="wide" style="max-width:640px"><a href="img/giris.png"><img src="img/giris.png" alt="AyakaLeaf giriş sayfası" loading="lazy"></a><figcaption>Giriş sayfası</figcaption></figure>
 </section>
 
