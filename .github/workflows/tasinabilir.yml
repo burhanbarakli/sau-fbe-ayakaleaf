@@ -1,0 +1,390 @@
+name: Taşınabilir paketler (Docker'sız)
+
+# AyakaLeaf Pro'nun Docker imajındaki derlenmiş kodundan Windows ve macOS için kurulum gerektirmeyen
+# zip paketleri üretir, her platformda çift tıklanan başlatıcıyı çalıştırıp şablonu derleyerek sınar.
+# "yayinla" seçilirse (ya da tasinabilir-v* etiketi gönderilirse) paketleri GitHub Releases'e koyar.
+
+on:
+  workflow_dispatch:
+    inputs:
+      yayinla:
+        description: Paketleri GitHub Releases'te yayınla
+        type: boolean
+        default: false
+  push:
+    branches: [main, 'tasinabilir-*']
+    paths: ['tasinabilir/**', '.github/workflows/tasinabilir.yml']
+    tags: ['tasinabilir-v*']
+
+concurrency:
+  group: tasinabilir-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AYA_IMAJ: ghcr.io/ayaka-notes/overleaf-pro:6.3.3
+  NODE_SURUM: v24.22.3
+  MONGO_SURUM: 8.0.38
+  GARNET_SURUM: v2.2.13
+  TL_DEPO: https://mirror.ctan.org/systems/texlive/tlnet
+
+jobs:
+  hazirla:
+    name: AyakaLeaf'i imajdan çıkar, yamala; şablonu paketle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: İmajdan /overleaf ve settings.js
+        run: |
+          docker pull "$AYA_IMAJ"
+          docker create --name aya "$AYA_IMAJ"
+          mkdir -p yapi/etc/overleaf
+          docker cp aya:/overleaf yapi/overleaf
+          docker cp aya:/etc/overleaf/settings.js yapi/etc/overleaf/settings.js
+          docker rm aya
+          cp tasinabilir/yamala.mjs yapi/
+      - name: Windows/macOS yamaları
+        run: node yapi/yamala.mjs
+      - name: Şablon (sau-fbe-doktora-latex-sablonu, main)
+        run: |
+          python3 - <<'EOF'
+          import importlib.util
+          s = importlib.util.spec_from_file_location('y', 'sablonu-yayinla.py')
+          y = importlib.util.module_from_spec(s); s.loader.exec_module(y)
+          open('sablon.zip', 'wb').write(y.sablon_zip(None))
+          EOF
+      - name: Paketle
+        run: |
+          tar -C yapi -cf - overleaf ayar | zstd -T0 -3 -o aya.tar.zst
+          ls -lh aya.tar.zst sablon.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aya-overleaf
+          path: |
+            aya.tar.zst
+            sablon.zip
+          compression-level: 0
+          retention-days: 3
+
+  tex-windows:
+    name: Taşınabilir TeX Live (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: onbellek
+        uses: actions/cache@v4
+        with:
+          path: texlive
+          key: tl2026-windows-${{ hashFiles('tasinabilir/tex-paketleri.txt') }}
+      - name: TeX Live kur
+        if: steps.onbellek.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          $hedef = Join-Path $PWD 'texlive'
+          Invoke-WebRequest "$env:TL_DEPO/install-tl.zip" -OutFile install-tl.zip
+          Expand-Archive install-tl.zip -DestinationPath kurulum
+          $kur = Get-ChildItem kurulum -Directory | Select-Object -First 1
+          @"
+          selected_scheme scheme-basic
+          TEXDIR $hedef
+          TEXMFLOCAL $hedef/texmf-local
+          TEXMFSYSVAR $hedef/texmf-var
+          TEXMFSYSCONFIG $hedef/texmf-config
+          TEXMFHOME $hedef/texmf-local
+          TEXMFVAR $hedef/texmf-var
+          TEXMFCONFIG $hedef/texmf-config
+          instopt_portable 1
+          instopt_adjustpath 0
+          instopt_letter 0
+          tlpdbopt_autobackup 0
+          tlpdbopt_install_docfiles 0
+          tlpdbopt_install_srcfiles 0
+          tlpdbopt_desktop_integration 0
+          tlpdbopt_file_assocs 0
+          tlpdbopt_w32_multi_user 0
+          "@ -replace '\\','/' | Set-Content -Encoding ascii profil.txt
+          & "$($kur.FullName)\install-tl-windows.bat" -no-interaction -profile profil.txt -repository $env:TL_DEPO
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          $paketler = Get-Content tasinabilir/tex-paketleri.txt | Where-Object { $_ -and -not $_.StartsWith('#') }
+          & "$hedef\bin\windows\tlmgr.bat" install @paketler
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+      - name: Dene ve paketle
+        shell: pwsh
+        run: |
+          & texlive\bin\windows\lualatex.exe --version | Select-Object -First 1
+          & texlive\bin\windows\latexmk.exe -v | Select-Object -First 2
+          New-Item -ItemType Directory vcrt | Out-Null
+          # MongoDB'nin istediği Visual C++ çalışma zamanı (uygulama klasörüne konabilir)
+          foreach ($d in 'vcruntime140.dll','vcruntime140_1.dll','msvcp140.dll') { Copy-Item "C:\Windows\System32\$d" vcrt\ }
+          tar -czf texlive-windows.tar.gz texlive vcrt
+          Get-Item texlive-windows.tar.gz | Select-Object Length
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tex-windows
+          path: texlive-windows.tar.gz
+          compression-level: 0
+          retention-days: 3
+
+  tex-macos:
+    name: Taşınabilir TeX Live (macOS, universal)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - id: onbellek
+        uses: actions/cache@v4
+        with:
+          path: texlive
+          key: tl2026-macos-${{ hashFiles('tasinabilir/tex-paketleri.txt') }}
+      - name: TeX Live kur
+        if: steps.onbellek.outputs.cache-hit != 'true'
+        run: |
+          hedef="$PWD/texlive"
+          curl -fsSL "$TL_DEPO/install-tl-unx.tar.gz" | tar -xzf -
+          cat > profil.txt <<EOF
+          selected_scheme scheme-basic
+          TEXDIR $hedef
+          TEXMFLOCAL $hedef/texmf-local
+          TEXMFSYSVAR $hedef/texmf-var
+          TEXMFSYSCONFIG $hedef/texmf-config
+          TEXMFHOME $hedef/texmf-local
+          TEXMFVAR $hedef/texmf-var
+          TEXMFCONFIG $hedef/texmf-config
+          binary_universal-darwin 1
+          instopt_portable 1
+          instopt_adjustpath 0
+          instopt_letter 0
+          tlpdbopt_autobackup 0
+          tlpdbopt_install_docfiles 0
+          tlpdbopt_install_srcfiles 0
+          EOF
+          ./install-tl-*/install-tl -no-interaction -profile profil.txt -repository "$TL_DEPO"
+          "$hedef/bin/universal-darwin/tlmgr" install $(grep -v '^#' tasinabilir/tex-paketleri.txt | grep .)
+      - name: Dene ve paketle
+        run: |
+          texlive/bin/universal-darwin/lualatex --version | head -1
+          tar -czf texlive-macos.tar.gz texlive
+          ls -lh texlive-macos.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tex-macos
+          path: texlive-macos.tar.gz
+          compression-level: 0
+          retention-days: 3
+
+  paketle:
+    name: Zip paketleri
+    needs: [hazirla, tex-windows, tex-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Disk aç
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL; df -h /
+      - uses: actions/download-artifact@v4
+        with:
+          path: parca
+      - name: Paketleri oluştur
+        run: |
+          set -euo pipefail
+          DOTNET_SURUM=$(curl -fsSL https://builds.dotnet.microsoft.com/dotnet/release-metadata/10.0/releases.json | jq -r '."latest-runtime"')
+          echo ".NET $DOTNET_SURUM"
+          mkdir -p cikti indir
+          ( cd indir
+            curl -fsSLO "https://nodejs.org/dist/$NODE_SURUM/node-$NODE_SURUM-win-x64.zip"
+            curl -fsSLO "https://nodejs.org/dist/$NODE_SURUM/node-$NODE_SURUM-darwin-arm64.tar.gz"
+            curl -fsSLO "https://nodejs.org/dist/$NODE_SURUM/node-$NODE_SURUM-darwin-x64.tar.gz"
+            curl -fsSLO "https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-$MONGO_SURUM.zip"
+            curl -fsSLO "https://fastdl.mongodb.org/osx/mongodb-macos-arm64-$MONGO_SURUM.tgz"
+            curl -fsSLO "https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-$MONGO_SURUM.tgz"
+            for g in win-x64-based-readytorun.zip osx-arm64-based.tar.xz osx-x64-based.tar.xz; do
+              curl -fsSLo "garnet-$g" "https://github.com/microsoft/garnet/releases/download/$GARNET_SURUM/$g"; done
+            for d in win-x64.zip osx-arm64.tar.gz osx-x64.tar.gz; do
+              curl -fsSLO "https://builds.dotnet.microsoft.com/dotnet/Runtime/$DOTNET_SURUM/dotnet-runtime-$DOTNET_SURUM-$d"; done )
+          mkdir tex-win tex-mac
+          tar -xzf parca/tex-windows/texlive-windows.tar.gz -C tex-win
+          tar -xzf parca/tex-macos/texlive-macos.tar.gz -C tex-mac
+
+          paket() { # $1 platform  $2 zip adı
+            local K="paket/AyakaLeaf-SAU" A="paket/AyakaLeaf-SAU/app"
+            rm -rf paket; mkdir -p "$A/node" "$A/mongodb/bin" "$A/garnet" "$A/dotnet"
+            zstd -d -c parca/aya-overleaf/aya.tar.zst | tar -xf - -C "$A"
+            cp tasinabilir/baslat.mjs tasinabilir/sablon-yukle.mjs parca/aya-overleaf/sablon.zip "$A/"
+            cp tasinabilir/OKUBENI.txt "$K/"
+            case $1 in
+              windows-x64)
+                cp tasinabilir/Baslat.bat "$K/"
+                unzip -q "indir/node-$NODE_SURUM-win-x64.zip" -d gec && mv gec/node-*/* "$A/node/" && rm -rf gec
+                unzip -q -j "indir/mongodb-windows-x86_64-$MONGO_SURUM.zip" '*/bin/mongod.exe' '*/LICENSE-Community.txt' -d "$A/mongodb/bin"
+                cp tex-win/vcrt/*.dll "$A/mongodb/bin/"
+                unzip -q indir/garnet-win-x64-based-readytorun.zip -d gec
+                g=$(dirname "$(find gec -name GarnetServer.exe | head -1)"); mv "$g"/* "$A/garnet/"; rm -rf gec
+                unzip -q "indir/dotnet-runtime-$DOTNET_SURUM-win-x64.zip" -d "$A/dotnet"
+                mv tex-win/texlive "$A/texlive" ;;
+              macos-*)
+                local m=$([ "$1" = macos-arm64 ] && echo arm64 || echo x64) mm=$([ "$1" = macos-arm64 ] && echo arm64 || echo x86_64)
+                cp tasinabilir/Baslat.command "$K/" && chmod +x "$K/Baslat.command"
+                tar -xzf "indir/node-$NODE_SURUM-darwin-$m.tar.gz" -C "$A/node" --strip-components=1
+                mkdir gec_m && tar -xzf "indir/mongodb-macos-$mm-$MONGO_SURUM.tgz" -C gec_m
+                cp gec_m/*/bin/mongod gec_m/*/LICENSE-Community.txt "$A/mongodb/bin/" && rm -rf gec_m
+                mkdir gec && tar -xJf "indir/garnet-osx-$m-based.tar.xz" -C gec
+                g=$(dirname "$(find gec -name GarnetServer -type f | head -1)"); mv "$g"/* "$A/garnet/"; rm -rf gec
+                chmod +x "$A/garnet/GarnetServer" "$A/mongodb/bin/mongod"
+                tar -xzf "indir/dotnet-runtime-$DOTNET_SURUM-osx-$m.tar.gz" -C "$A/dotnet"
+                cp -a tex-mac/texlive "$A/texlive" ;;
+            esac
+            cat > "$A/LISANSLAR.txt" <<EOF
+          Bu paketteki bileşenler ve lisansları:
+          - AyakaLeaf Pro ($AYA_IMAJ, derlenmiş): AGPL-3.0. Kaynak: https://github.com/ayaka-notes/ayakaleaf-pro
+            Windows/macOS uyarlaması (yamala.mjs, baslat.mjs): https://github.com/burhanbarakli/sau-fbe-ayakaleaf/tree/main/tasinabilir
+          - Node.js $NODE_SURUM: MIT (app/node/LICENSE)
+          - MongoDB Community $MONGO_SURUM: SSPL (app/mongodb/bin/LICENSE-Community.txt)
+          - Microsoft Garnet $GARNET_SURUM: MIT. https://github.com/microsoft/garnet
+          - .NET çalışma zamanı $DOTNET_SURUM: MIT (app/dotnet/LICENSE.txt)
+          - TeX Live 2026: özgür yazılım lisansları, https://tug.org/texlive/copying.html
+          - SAÜ FBE tez şablonu: MIT. https://github.com/burhanbarakli/sau-fbe-doktora-latex-sablonu
+          EOF
+            ( cd paket && zip -qry -6 "../cikti/$2" AyakaLeaf-SAU )
+            ls -lh "cikti/$2"; rm -rf paket
+          }
+          paket macos-arm64 AyakaLeaf-SAU-macOS-AppleSilicon.zip
+          paket macos-x64 AyakaLeaf-SAU-macOS-Intel.zip
+          paket windows-x64 AyakaLeaf-SAU-Windows.zip
+          for f in cikti/*.zip; do [ $(stat -c%s "$f") -lt 2000000000 ] || { echo "$f 2 GB'den büyük"; exit 1; }; done
+      - uses: actions/upload-artifact@v4
+        with: { name: paket-windows, path: cikti/AyakaLeaf-SAU-Windows.zip, compression-level: 0, retention-days: 7 }
+      - uses: actions/upload-artifact@v4
+        with: { name: paket-macos-arm64, path: cikti/AyakaLeaf-SAU-macOS-AppleSilicon.zip, compression-level: 0, retention-days: 7 }
+      - uses: actions/upload-artifact@v4
+        with: { name: paket-macos-x64, path: cikti/AyakaLeaf-SAU-macOS-Intel.zip, compression-level: 0, retention-days: 7 }
+
+  sina:
+    name: Sına (${{ matrix.ad }})
+    needs: paketle
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { ad: Windows, os: windows-latest, paket: paket-windows }
+          - { ad: macOS Apple Silicon, os: macos-15, paket: paket-macos-arm64 }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.paket }}
+      - name: Aç (kullanıcı gibi)
+        run: |
+          if [ "$RUNNER_OS" = Windows ]; then
+            powershell -Command "Expand-Archive -Path (Get-Item *.zip).FullName -DestinationPath C:\\AyakaLeaf"
+            echo "KOK=/c/AyakaLeaf/AyakaLeaf-SAU" >> "$GITHUB_ENV"
+          else
+            ditto -x -k *.zip "$HOME/AyakaLeaf"
+            echo "KOK=$HOME/AyakaLeaf/AyakaLeaf-SAU" >> "$GITHUB_ENV"
+            # kullanıcının Mac'i gibi: sistemde .NET yok
+            for d in /usr/local/share/dotnet "$HOME/.dotnet"; do [ -e "$d" ] && sudo mv "$d" "$d.gizli"; done
+            echo "DOTNET_ROOT=" >> "$GITHUB_ENV"
+          fi
+          rm -f *.zip
+      - name: Sistemde TeX yok (paketteki kullanılmalı)
+        run: |
+          if command -v lualatex; then echo "Sistemde lualatex var; test paketteki TeX'i kanıtlamaz"; exit 1; fi
+          echo "sistemde lualatex yok"
+      - name: Başlatıcıyı çalıştır, ilk kurulum
+        env:
+          AYA_TARAYICI: '0'
+          AYA_KURULUMDAN_SONRA_CIK: '1'
+          AYA_YONETICI_EPOSTA: yonetici@yerel.test
+        run: |
+          export AYA_YONETICI_SIFRE="Aa1$(openssl rand -hex 12)"
+          cd "$KOK"
+          if [ "$RUNNER_OS" = Windows ]; then cmd //c "echo.| Baslat.bat" 2>&1 | tee ../baslat.out
+          else ./Baslat.command < /dev/null 2>&1 | tee ../baslat.out; fi
+          grep -q "KURULUM TAMAM" ../baslat.out
+      - name: Sayfa sayısı
+        run: |
+          f=$(find "$KOK/veri/data/compiles" -name output.log | head -1)
+          grep -o "Output written on [^)]*)" "$f"
+          grep -q "79 pages" "$f"
+      - name: İkinci açılış (kurulum sormadan)
+        env:
+          AYA_TARAYICI: '0'
+          AYA_KURULUMDAN_SONRA_CIK: '1'
+        run: |
+          cd "$KOK"
+          ( if [ "$RUNNER_OS" = Windows ]; then cmd //c "echo.| Baslat.bat"; else ./Baslat.command < /dev/null; fi ) > ../ikinci.out 2>&1 &
+          for i in $(seq 1 300); do grep -q "Tarayıcıda açın" ../ikinci.out && break; sleep 1; done
+          cat ../ikinci.out
+          grep -q "Tarayıcıda açın" ../ikinci.out
+          ! grep -q "İlk kurulum" ../ikinci.out
+          curl -fsS -o /dev/null -w "%{http_code}\n" http://localhost:8080/login
+      - name: Günlükler
+        if: always()
+        run: |
+          mkdir -p gunluk; cp -r "$KOK/veri/log" gunluk/ 2>/dev/null || true
+          cp "$KOK"/../*.out gunluk/ 2>/dev/null || true
+          find "$KOK/veri/data/compiles" -name output.log -exec cp {} gunluk/ \; 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gunluk-${{ matrix.paket }}
+          path: gunluk
+          retention-days: 7
+
+  sina-intel:
+    name: Sına (macOS Intel, isteğe bağlı)
+    needs: paketle
+    runs-on: macos-15-intel
+    timeout-minutes: 45
+    continue-on-error: true
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: paket-macos-x64
+      - name: Aç, çalıştır, derle
+        env:
+          AYA_TARAYICI: '0'
+          AYA_KURULUMDAN_SONRA_CIK: '1'
+          AYA_YONETICI_EPOSTA: yonetici@yerel.test
+        run: |
+          ditto -x -k *.zip "$HOME/AyakaLeaf"; cd "$HOME/AyakaLeaf/AyakaLeaf-SAU"
+          for d in /usr/local/share/dotnet "$HOME/.dotnet"; do [ -e "$d" ] && sudo mv "$d" "$d.gizli"; done
+          export DOTNET_ROOT= AYA_YONETICI_SIFRE="Aa1$(openssl rand -hex 12)"
+          ./Baslat.command < /dev/null 2>&1 | tee baslat.out
+          grep -q "KURULUM TAMAM" baslat.out
+          grep -o "Output written on [^)]*)" $(find veri/data/compiles -name output.log | head -1)
+
+  yayinla:
+    name: GitHub Releases'te yayınla
+    needs: sina
+    if: (github.event_name == 'workflow_dispatch' && inputs.yayinla) || startsWith(github.ref, 'refs/tags/tasinabilir-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: paket-*
+          merge-multiple: true
+      - name: Sürüm oluştur
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then ETIKET="${GITHUB_REF#refs/tags/}"; else ETIKET="tasinabilir-$(date -u +%Y.%m.%d-%H%M)"; fi
+          cat > notlar.md <<EOF
+          Docker ve WSL gerektirmeyen, zip'ten açılıp çift tıklanarak çalışan AyakaLeaf Pro + SAÜ FBE tez şablonu.
+
+          | İndir | Bilgisayar |
+          |---|---|
+          | **AyakaLeaf-SAU-Windows.zip** | Windows 10/11 (64 bit) |
+          | **AyakaLeaf-SAU-macOS-AppleSilicon.zip** | M1/M2/M3/M4 işlemcili Mac |
+          | **AyakaLeaf-SAU-macOS-Intel.zip** | Intel işlemcili Mac |
+
+          Kurulum: https://github.com/burhanbarakli/sau-fbe-ayakaleaf#kurulum-1-taşınabilir-önerilen
+          İçerik: AyakaLeaf Pro ($AYA_IMAJ, AGPL-3.0), Node.js $NODE_SURUM, MongoDB $MONGO_SURUM, Garnet $GARNET_SURUM, .NET 10, TeX Live 2026 (seçme paketler).
+          EOF
+          gh release create "$ETIKET" --title "Taşınabilir paket ($ETIKET)" --notes-file notlar.md --latest AyakaLeaf-SAU-*.zip
