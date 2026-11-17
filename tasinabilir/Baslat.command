@@ -4,5 +4,7 @@ cd "$(dirname "$0")" || exit 1
 # Internetten indirilen paketteki karantina isaretini kaldir; yoksa macOS her programi tek tek engeller.
 xattr -dr com.apple.quarantine . 2>/dev/null
 ./app/node/bin/node app/baslat.mjs
+kod=$?
 echo
-read -n 1 -s -r -p "Pencereyi kapatabilirsiniz (ya da bir tusa basin)."
+read -n 1 -s -r -p "Pencereyi kapatabilirsiniz (ya da bir tusa basin)." || true
+exit $kod
