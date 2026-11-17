@@ -48,6 +48,8 @@ Docker, WSL, TeX dağıtımı, MongoDB ya da başka bir program kurmanız gerekm
 2. Zip'i açın:
    - **Windows:** zip'e sağ tıklayın → **Tümünü ayıkla** → hedef olarak `C:\AyakaLeaf` yazın. Klasör yolunda
      Türkçe karakter (ı, ş, ğ…) olmaması önerilir; LaTeX bu tür yollarda hata verebilir.
+     Gezgin yavaş kalırsa (binlerce dosya vardır) PowerShell'de daha hızlı açılır:
+     `mkdir C:\AyakaLeaf; tar -xf "$HOME\Downloads\AyakaLeaf-SAU-Windows.zip" -C C:\AyakaLeaf`
    - **macOS:** zip'e çift tıklayın; `AyakaLeaf-SAU` klasörünü **Uygulamalar**'a ya da ev klasörünüze taşıyın.
 3. `AyakaLeaf-SAU` klasöründe başlatıcıya çift tıklayın:
    - **Windows:** `Baslat.bat`. *"Windows kişisel bilgisayarınızı korudu"* uyarısı çıkarsa **Ek bilgi → Yine de çalıştır**.
@@ -367,14 +369,32 @@ alabilirsiniz.
 Ayrıntılı kurulum sorunları: AyakaLeaf'in [Windows](https://ayakaleaf-pro.ayaka.space/on-premises/installation/using-docker-compose/windows/troubleshooting)
 ve [macOS](https://ayakaleaf-pro.ayaka.space/on-premises/installation/using-docker-compose/macos/troubleshooting) sorun giderme sayfaları.
 
-## Claude ile kurulum (Docker yolu)
+## Claude ile kurulum
 
-Taşınabilir paket için yardım gerekmez; aşağıdaki istem Docker yolu içindir. [Claude Code](https://claude.com/claude-code)'u (Claude masaüstü uygulamasındaki **Code** sekmesi ya da terminalde
-`claude`) açıp aşağıdaki istemi yapıştırın:
+[Claude Code](https://claude.com/claude-code)'u açın (Claude masaüstü uygulamasındaki **Code** sekmesi ya da
+terminalde `claude`) ve seçtiğiniz kurulum yolunun istemini yapıştırın. Claude her adımı denetler, bilgisayarınızda
+bir şey değiştirmeden önce size sorar; yönetici şifresini siz girersiniz.
+
+### Kurulum 1: Taşınabilir
 
 ```text
-Bilgisayarıma SAÜ FBE tez şablonu gömülü AyakaLeaf Pro kurmamı istiyorum.
-Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'yi baştan sona oku ve ona göre ilerle).
+Bilgisayarıma SAÜ FBE tez şablonu gömülü AyakaLeaf Pro'nun taşınabilir paketini (Kurulum 1, Docker'sız) kurmamı istiyorum.
+Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'deki "Kurulum 1: Taşınabilir" bölümünü oku ve ona göre ilerle).
+
+1. İşletim sistemimi ve işlemcimi belirle: Windows 10/11 64 bit mi, macOS'ta Apple Silicon mı Intel mi (`uname -m`: arm64 ya da x86_64). Buna göre zip'i seç: AyakaLeaf-SAU-Windows.zip, AyakaLeaf-SAU-macOS-AppleSilicon.zip ya da AyakaLeaf-SAU-macOS-Intel.zip.
+2. En az 6 GB boş disk olduğunu ve 8080, 4000, 3000-3100, 27017, 6379 portlarını başka bir programın (MongoDB, Redis, Docker'lı Overleaf/AyakaLeaf) kullanmadığını kontrol et. Kullanan varsa bana söyle; kapatmayı bana bırak.
+3. Zip'i https://github.com/burhanbarakli/sau-fbe-ayakaleaf/releases/latest/download/<zip adı> adresinden İndirilenler klasörüme indir (~1,2 GB).
+4. Zip'i aç. Windows'ta C:\AyakaLeaf klasörünü oluşturup Windows'un kendi tar'ıyla aç: `C:\Windows\System32\tar.exe -xf <zip> -C C:\AyakaLeaf` (PowerShell'in Expand-Archive'ı çok yavaştır; Git Bash'in tar'ı zip açamaz). macOS'ta `ditto -x -k <zip> ~/AyakaLeaf` ile aç ve `xattr -dr com.apple.quarantine ~/AyakaLeaf/AyakaLeaf-SAU` ile karantina işaretini kaldır. Hedefte zaten bir AyakaLeaf-SAU klasörü varsa üzerine yazma; içindeki veri klasörü projelerimdir, önce bana sor.
+5. Başlatıcıyı ayrı bir pencerede aç: Windows'ta `start "" "C:\AyakaLeaf\AyakaLeaf-SAU\Baslat.bat"`, macOS'ta `open ~/AyakaLeaf/AyakaLeaf-SAU/Baslat.command`. Pencere yönetici e-postası ve şifresi isteyecek: şifreyi sohbete yazdırma, açılan pencereye benim girmemi iste.
+6. Pencerede "KURULUM TAMAM" yazdığını bana sor, sonra http://localhost:8080/login adresinin yanıt verdiğini kontrol et. Sorun çıkarsa README'deki "Sorun giderme" bölümünün taşınabilir paket tablosuna ve AyakaLeaf-SAU/veri/log/ içindeki günlüklere (web.log, clsi.log) bak.
+7. Bitince bana her gün nasıl başlatacağımı (Baslat'a çift tıklama), projelerimin nerede durduğunu (AyakaLeaf-SAU/veri) ve nasıl yedek alacağımı özetle.
+```
+
+### Kurulum 2: Docker
+
+```text
+Bilgisayarıma SAÜ FBE tez şablonu gömülü AyakaLeaf Pro'yu Docker ile (Kurulum 2) kurmamı istiyorum.
+Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'deki "Kurulum 2: Docker" bölümünü oku ve ona göre ilerle).
 
 1. İşletim sistemimi belirle. Windows'taysam WSL 2 ve Ubuntu kurulu mu bak (`wsl --list --verbose`); değilse kurulum komutunu bana göster, yönetici PowerShell'de benim çalıştırmamı iste.
 2. Docker'ın çalıştığını doğrula (Windows'ta Ubuntu içinden `docker version`; Client ve Server görünmeli). Yoksa README'deki seçenekleri anlat ve hangisini istediğimi sor. Docker Desktop'ı ve lisans onayını bana bırak; Ubuntu içine Docker Engine kurulacaksa komutları önce göster.
