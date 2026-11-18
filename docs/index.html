@@ -129,6 +129,7 @@ figure.wide{max-width:980px;margin:14px 0}
     <li><a href="#linux">Linux</a></li>
     <li class="grp">Kurulum 3: Masaüstü editör</li>
     <li><a href="#masaustu">TeXstudio (en basit)</a></li>
+    <li><a href="#texstudio-kullanim">TeXstudio ile kullanım</a></li>
     <li><a href="#claude">Claude ile kurulum (1, 2, 3)</a></li>
     <li class="grp">Kullanım</li>
     <li><a href="#giris">İlk giriş</a></li>
@@ -352,10 +353,66 @@ cd sau-fbe-ayakaleaf
 <p><a class="btn" href="https://github.com/burhanbarakli/sau-fbe-doktora-latex-sablonu/archive/refs/heads/main.zip">⬇ Şablonu indir (ZIP)</a></p>
 <p>Zip'i açın ve içindeki <code>sablon</code> klasörünü istediğiniz yere kopyalayıp adını değiştirin (ör. <code>Belgeler\Tezim</code>). Windows'ta klasör yolunda Türkçe karakter olmaması önerilir.</p>
 <h3>4. tez.tex'i açın, F5'e basın</h3>
-<p>TeXstudio'da <code>tez.tex</code>'i açıp <span class="kbd">F5</span>'e basın (<i>Derle ve Göster</i>); PDF sağda açılır. <code>tez.tex</code>'in ilk iki satırı (<code>% !TeX program = lualatex</code>, <code>% !BIB program = biber</code>) TeXstudio'ya derleyiciyi söyler: hiçbir ayar yapmanız gerekmez, bu satırları silmeyin. İlk derleme birkaç dakika sürebilir (MiKTeX eksik paketleri indirir, yazı tipi önbelleği oluşur). TeXstudio gerekiyorsa kendiliğinden ikinci kez derler; içindekiler yine boş görünürse <span class="kbd">F5</span>'e bir kez daha basın.</p>
+<p>TeXstudio'da <code>tez.tex</code>'i açıp <span class="kbd">F5</span>'e basın (araç çubuğundaki çift yeşil ok, <i>Oluştur ve görüntüle</i>); PDF sağda açılır. <code>tez.tex</code>'in ilk iki satırı (<code>% !TeX program = lualatex</code>, <code>% !BIB program = biber</code>) TeXstudio'ya derleyiciyi söyler: hiçbir ayar yapmanız gerekmez, bu satırları silmeyin. İlk derleme birkaç dakika sürebilir (MiKTeX eksik paketleri indirir, yazı tipi önbelleği oluşur). TeXstudio gerekiyorsa kendiliğinden ikinci kez derler; içindekiler yine boş görünürse <span class="kbd">F5</span>'e bir kez daha basın.</p>
 <div class="note"><p>PDF'te bir yere <span class="kbd">Ctrl</span>+tıklayınca (macOS'ta <span class="kbd">Cmd</span>+tıklama) TeXstudio koddaki ilgili satıra gider. Tez bilgilerini <code>tez.tex</code>'in başına, bölümleri <code>bolumler/</code> altına yazarsınız; bütün kurallar ve örnekler <a href="https://burhanbarakli.github.io/sau-fbe-doktora-latex-sablonu/">şablonun kullanım kılavuzundadır</a>.</p>
 <p><b>.bib (Zotero/Mendeley) kullanırsanız</b> (<code>tez.tex</code>'teki <code>\input{bib-ayar}</code> ve <code>\addbibresource</code> satırlarını açıp <code>bolumler/kaynaklar.tex</code>'i <code>bib-ayar.tex</code>'in başında yazdığı gibi değiştirdikten sonra): <span class="kbd">F5</span> Biber'i gerektiğinde kendisi çalıştırır. İlk seferde TeXstudio <i>“… bibliography komutunu txs:///biber ile değiştirmek istiyor”</i> diye sorar: <b>Evet</b>'e basın. Bu onayı hatırlamak için <code>tez.tex</code>'in en üstüne <code>% !TeX document-id = {...}</code> satırını ekler; normaldir. Atıflar yine <code>[?]</code> görünürse <span class="kbd">F8</span> (<i>Araçlar → Kaynakça</i>) sonra <span class="kbd">F5</span>.</p></div>
 <p><b>Başka editörler:</b> VS Code + <a href="https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop">LaTeX Workshop</a> şablondaki <code>latexmkrc</code>'yi okuyup kaydettikçe derler (Windows'ta MiKTeX'in <code>latexmk</code>'si için Perl gerekir: <code>winget install StrawberryPerl.StrawberryPerl</code>). MiKTeX ve MacTeX ile gelen TeXworks da <code>tez.tex</code>'in ilk satırını okuyup LuaLaTeX ile derler.</p>
+</section>
+
+<section id="texstudio-kullanim">
+<h2>TeXstudio ile kullanım</h2>
+<p>Bu bölüm <a href="#masaustu">Kurulum 3</a> içindir. Ekran görüntüleri Windows'ta TeXstudio 4.9 ve MiKTeX ile alınmıştır (Türkçe arayüz, koyu tema); macOS'ta menüler aynıdır, <span class="kbd">Ctrl</span> yerine <span class="kbd">Cmd</span> kullanılır.</p>
+
+<h3>Ekran</h3>
+<figure class="wide"><a href="img/texstudio_ekran.png"><img src="img/texstudio_ekran.png" alt="TeXstudio ekranı: derleme düğmeleri, dosya listesi, kod, PDF ve iletiler bölümleri işaretli" loading="lazy"></a><figcaption>TeXstudio'da açılmış şablon: solda kod, sağda PDF.</figcaption></figure>
+<table>
+  <tr><th>No</th><th>Bölüm</th><th>Ne işe yarar</th></tr>
+  <tr><td>1</td><td>Derleme düğmeleri</td><td>PDF'i üretir (aşağıda ayrıntı).</td></tr>
+  <tr><td>2</td><td>Dosyalar ve başlıklar (<i>Yapı</i>)</td><td><code>tez.tex</code>'in çağırdığı bütün dosyalar (<code>onkisim/…</code>, <code>bolumler/…</code>). Birine çift tıklayınca yeni sekmede açılır; açık dosyanın bölüm başlıkları altında listelenir, tıklayınca o başlığa gidilir.</td></tr>
+  <tr><td>3</td><td>Kod (editör)</td><td>Yazdığınız yer. Her dosya bir sekmedir.</td></tr>
+  <tr><td>4</td><td>PDF</td><td>Derlenen tez. Sayfa numarası ve yakınlaştırma alt çubuktadır.</td></tr>
+  <tr><td>5</td><td>İletiler / hatalar</td><td>Derlemenin sonucu. <i>İşlemden normal çıkıldı</i> derlemenin başarılı olduğunu gösterir; hata varsa <b>Sorunlar</b> listesi açılır.</td></tr>
+</table>
+
+<h3>Nereden derlenir?</h3>
+<figure class="wide" style="max-width:820px"><a href="img/texstudio_derle.png"><img src="img/texstudio_derle.png" alt="TeXstudio derleme düğmeleri: Oluştur ve görüntüle (F5), Derle (F6), Derlemeyi durdur, Görüntüle (F7), Günlüğü görüntüle" loading="lazy"></a><figcaption>Araç çubuğundaki derleme düğmeleri.</figcaption></figure>
+<ul>
+  <li><b>Derlemek için:</b> araç çubuğundaki <b>çift yeşil ok</b> (<i>Oluştur ve görüntüle</i>), klavyede <span class="kbd">F5</span> ya da menüde <b>Araçlar → Oluştur ve görüntüle</b>. Üçü aynı işi yapar.</li>
+  <li><span class="kbd">F5</span> önce açık dosyaları <b>kaydeder</b>, sonra derler, PDF'i sağda gösterir. Ayrıca kaydetmeniz gerekmez.</li>
+  <li>Hangi dosyada olursanız olun (ör. <code>bolumler/bolum1_giris.tex</code>) <b>bütün tez</b> derlenir; ana dosya <code>tez.tex</code>'tir. TeXstudio bunu <code>tez.tex</code> açıkken kendisi bulur; bu yüzden çalışırken <code>tez.tex</code> sekmesini kapatmayın.</li>
+  <li>Derleyici <b>LuaLaTeX</b>'tir; <code>tez.tex</code>'in ilk satırı (<code>% !TeX program = lualatex</code>) bunu söyler. İletilerde <code>lualatex.exe -synctex=1 …</code> satırını görürsünüz. İçindekiler ve atıflar için TeXstudio gerekirse kendiliğinden ikinci kez derler.</li>
+  <li>Çıktı: <code>tez.tex</code>'in yanındaki <b><code>tez.pdf</code></b> (ör. <code>C:\Tezim\tez.pdf</code>). Teslim için bu dosyayı kullanın.</li>
+</ul>
+
+<h3>Bölüm yazmak</h3>
+<figure class="wide"><a href="img/texstudio_bolum.png"><img src="img/texstudio_bolum.png" alt="Yapı panelinde bolum1_giris dosyası açılmış, yeni sekmede kodu, sağda PDF'in ilgili sayfası" loading="lazy"></a><figcaption>(1) Dosya listesinde bölüme çift tıklayın, (2) yeni sekmede açılır, <span class="kbd">F5</span> ile derleyince (3) PDF imlecin bulunduğu sayfaya gider.</figcaption></figure>
+<ul>
+  <li><b>Tez bilgileri</b> (başlık, ad, danışman, jüri, tarih) <code>tez.tex</code>'in başındadır; satır başındaki <code>%</code> o satırı kapatır.</li>
+  <li><b>Bölümler</b> <code>bolumler/</code>, özet, teşekkür, kısaltmalar <code>onkisim/</code> altındadır. Yeni bölüm eklemek için dosyayı oluşturup <code>tez.tex</code>'teki <code>\input{bolumler/…}</code> listesine ekleyin.</li>
+  <li><b>Şekiller</b> <code>sekiller/</code> klasörüne konur. Bütün yazım kuralları ve örnekler: <a href="https://burhanbarakli.github.io/sau-fbe-doktora-latex-sablonu/">şablonun kullanım kılavuzu</a>.</li>
+  <li><b>Koddan PDF'e, PDF'ten koda:</b> PDF'te bir yere <span class="kbd">Ctrl</span>+tıklayınca kodda o satıra gidilir; kodda sağ tıklayıp <b>PDF dosyasına git</b> deyince PDF o yere kayar.</li>
+</ul>
+
+<h3>Hata olursa</h3>
+<figure class="wide" style="max-width:720px"><a href="img/texstudio_hata.png"><img src="img/texstudio_hata.png" alt="Hatalı satır kırmızı işaretli, Sorunlar listesinde Undefined control sequence hatası" loading="lazy"></a><figcaption>(1) Hatalı satır kırmızı işaretlenir, (2) <b>Sorunlar</b> listesinde hatanın açıklaması ve satır numarası görünür.</figcaption></figure>
+<ul>
+  <li>Hatalı satır kodda <b>kırmızı</b> işaretlenir. Altta <b>Sorunlar</b> listesinde <i>Tür</i> sütunu <b>hata</b> olan satır asıl sorundur; <i>Satır</i> sütunu yerini, <i>İleti</i> sütunu nedenini söyler (örnekteki <code>Undefined control sequence</code> yanlış yazılmış bir komuttur).</li>
+  <li><b>uyarı</b> ve <b>kötü kutu</b> (<code>Underfull/Overfull \hbox</code>) satırları hata değildir; PDF yine oluşur, önemsemeyebilirsiniz.</li>
+  <li>Hatayı düzeltip yeniden <span class="kbd">F5</span>'e basın. Derleme takılırsa gri kare (<i>Derlemeyi durdur</i>) ile kesin.</li>
+  <li>Kelimelerin altındaki noktalı çizgiler yazım denetimidir (alt çubukta <code>en_US</code>); derlemeyi etkilemez.</li>
+</ul>
+
+<h3>Kısayollar</h3>
+<table>
+  <tr><th>Tuş</th><th>İş</th></tr>
+  <tr><td><span class="kbd">F5</span></td><td>Kaydet, derle, PDF'i göster (<i>Oluştur ve görüntüle</i>)</td></tr>
+  <tr><td><span class="kbd">F6</span> / <span class="kbd">F7</span></td><td>Yalnızca derle / PDF'i yeniden göster</td></tr>
+  <tr><td><span class="kbd">F8</span></td><td>Kaynakçayı (Biber) elle çalıştır; yalnızca .bib kullanıyorsanız ve atıflar <code>[?]</code> kalırsa</td></tr>
+  <tr><td><span class="kbd">Ctrl</span>+<span class="kbd">S</span></td><td>Kaydet</td></tr>
+  <tr><td><span class="kbd">Ctrl</span>+<span class="kbd">F</span></td><td>Dosyada ara</td></tr>
+  <tr><td><span class="kbd">Ctrl</span>+tıklama (PDF'te)</td><td>Koddaki satıra git</td></tr>
+</table>
+<div class="note"><p><b>Teslimden önce</b> <code>tez.tex</code>'teki <code>\documentclass[doktora,notlar]{sauthesis}</code> satırında <code>notlar</code>'ı <code>notsuz</code> yapın; kırmızı şablon açıklamaları kalkar. <b>Yedek</b> için tez klasörünüzü (ör. <code>C:\Tezim</code>) düzenli olarak kopyalayın; AyakaLeaf'teki gibi otomatik geçmiş yoktur.</p></div>
 </section>
 
 <section id="claude">

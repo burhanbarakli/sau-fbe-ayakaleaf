@@ -239,7 +239,7 @@ hızlı bu yoldadır. Proje geçmişi, ortak düzenleme ve şablon galerisi yokt
 3. **Şablonu indirin:** [**sau-fbe-doktora-latex-sablonu (ZIP)**](https://github.com/burhanbarakli/sau-fbe-doktora-latex-sablonu/archive/refs/heads/main.zip).
    Zip'i açın ve içindeki `sablon` klasörünü istediğiniz yere kopyalayıp adını değiştirin (ör. `Belgeler\Tezim`).
    Windows'ta klasör yolunda Türkçe karakter olmaması önerilir.
-4. **TeXstudio'da `tez.tex`'i açın ve F5'e basın** (*Derle ve Göster*). PDF sağda açılır. `tez.tex`'in ilk iki satırı
+4. **TeXstudio'da `tez.tex`'i açın ve F5'e basın** (araç çubuğundaki çift yeşil ok, *Oluştur ve görüntüle*). PDF sağda açılır. `tez.tex`'in ilk iki satırı
    (`% !TeX program = lualatex`, `% !BIB program = biber`) TeXstudio'ya derleyiciyi söyler; hiçbir ayar yapmanız
    gerekmez, bu satırları silmeyin. İlk derleme birkaç dakika sürebilir: MiKTeX eksik paketleri indirir, yazı
    tipi önbelleği oluşur. TeXstudio gerekiyorsa kendiliğinden ikinci kez derler; içindekiler yine boş görünürse
@@ -260,6 +260,43 @@ Kaynakça*) sonra **F5**.
 eklentisi şablondaki `latexmkrc`'yi okuyup kaydettikçe derler (Windows'ta MiKTeX'in `latexmk`'si için Perl gerekir:
 `winget install StrawberryPerl.StrawberryPerl`). MiKTeX ve MacTeX ile gelen TeXworks da `tez.tex`'in ilk satırını
 okuyup LuaLaTeX ile derler.
+
+### TeXstudio ile kullanım
+
+![TeXstudio ekranı: derleme düğmeleri, dosya listesi, kod, PDF ve iletiler bölümleri işaretli](docs/img/texstudio_ekran.png)
+
+| No | Bölüm | Ne işe yarar |
+|---|---|---|
+| 1 | Derleme düğmeleri | PDF'i üretir (aşağıda). |
+| 2 | Dosyalar ve başlıklar (*Yapı*) | `tez.tex`'in çağırdığı dosyalar; çift tıklayınca yeni sekmede açılır, başlıklara tıklayınca oraya gidilir. |
+| 3 | Kod (editör) | Yazdığınız yer; her dosya bir sekme. |
+| 4 | PDF | Derlenen tez. |
+| 5 | İletiler / hatalar | *İşlemden normal çıkıldı* = başarılı; hata varsa **Sorunlar** listesi açılır. |
+
+**Nereden derlenir?**
+
+![TeXstudio derleme düğmeleri: Oluştur ve görüntüle (F5), Derle (F6), Derlemeyi durdur, Görüntüle (F7), Günlüğü görüntüle](docs/img/texstudio_derle.png)
+
+- Araç çubuğundaki **çift yeşil ok** (*Oluştur ve görüntüle*), **F5** ya da **Araçlar → Oluştur ve görüntüle**: üçü aynı işi
+  yapar. F5 önce açık dosyaları kaydeder, sonra derler ve PDF'i sağda gösterir.
+- Hangi dosyada olursanız olun (ör. `bolumler/bolum1_giris.tex`) **bütün tez** derlenir; ana dosya `tez.tex`'tir
+  (çalışırken `tez.tex` sekmesini açık tutun). PDF, imlecin bulunduğu yerin sayfasına gider.
+- Derleyici **LuaLaTeX**'tir (`tez.tex`'in ilk satırı); içindekiler ve atıflar için TeXstudio gerekirse ikinci kez derler.
+- Çıktı `tez.tex`'in yanındaki **`tez.pdf`**'tir (ör. `C:\Tezim\tez.pdf`).
+
+![Yapı panelinde bolum1_giris dosyası açılmış, yeni sekmede kodu, sağda PDF'in ilgili sayfası](docs/img/texstudio_bolum.png)
+
+**Koddan PDF'e, PDF'ten koda:** PDF'te **Ctrl+tıklama** koddaki satıra götürür; kodda sağ tıklayıp **PDF dosyasına git**
+PDF'i o yere kaydırır.
+
+**Hata olursa:** hatalı satır kırmızı işaretlenir; **Sorunlar** listesinde *Tür* sütunu **hata** olan satır asıl
+sorundur (*Satır* yerini, *İleti* nedenini söyler). **uyarı** ve **kötü kutu** (`Underfull/Overfull \hbox`) satırları
+hata değildir, PDF yine oluşur. Düzeltip yeniden F5; takılırsa gri kare (*Derlemeyi durdur*).
+
+![Hatalı satır kırmızı işaretli, Sorunlar listesinde Undefined control sequence hatası](docs/img/texstudio_hata.png)
+
+**Teslimden önce** `\documentclass[doktora,notlar]{sauthesis}` satırında `notlar`'ı `notsuz` yapın. **Yedek** için tez
+klasörünüzü düzenli olarak kopyalayın; otomatik geçmiş yoktur.
 
 ## Kullanım
 
