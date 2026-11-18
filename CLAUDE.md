@@ -22,4 +22,7 @@ Bu depo, AyakaLeaf Pro'yu (Overleaf CE tabanlı, kendi sunucunda çalışan LaTe
   `baslat.mjs` Docker'daki runit/nginx/init betiklerinin karşılığıdır; ilk açılışta varsayılan yöneticiyi oluşturur ve
   `sablon-yukle.mjs` (sablonu-yayinla.py'nin Node karşılığı) ile şablonu yükler. Veriler paketin yanındaki `veri/`'de.
   AyakaLeaf sürümü yükseltilince `yamala.mjs` "YAMA BULUNAMADI" derse yamayı yeni koda göre güncelle.
+- **Kurulum 3 (masaüstü editör, AyakaLeaf'siz):** yalnızca belgelerde anlatılır (MiKTeX/MacTeX + TeXstudio,
+  şablon zip'i). `tez.tex`'in ilk iki satırı (`% !TeX program = lualatex`, `% !BIB program = biber`) TeXstudio'nun
+  derleyiciyi seçmesini sağlar; şablon deposunda bu satırları koru.
 - Belgeler: README.md ve `docs/index.html` (GitHub Pages). AyakaLeaf belgeleri: https://ayakaleaf-pro.ayaka.space/llms.txt

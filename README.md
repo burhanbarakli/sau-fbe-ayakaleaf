@@ -9,17 +9,20 @@ Kendi bilgisayarınızda (ya da bölümünüzün sunucusunda) çalışan, **Over
 editörü** kurar ve içine **Sakarya Üniversitesi Fen Bilimleri Enstitüsü lisansüstü tez şablonunu** hazır
 şablon olarak ekler. Kurulumdan sonra proje listenizde şablonun hazır bir kopyası (**Tezim**) durur: açın,
 adını değiştirin ve yazmaya başlayın. Yeni kopyalar için şablon galeride de durur (**Yeni Proje → Diğer şablonlar →
-Tezler**). TeX dağıtımı kurmanız gerekmez.
+Tezler**). AyakaLeaf yollarında TeX dağıtımı kurmanız gerekmez.
 
-İki kurulum yolu var:
+Üç kurulum yolu var. İlk ikisi tarayıcıda açılan, Overleaf benzeri **AyakaLeaf**'i kurar. Üçüncüsü AyakaLeaf'siz,
+en basit yoldur: bilgisayarınıza bir LaTeX dağıtımı ve ücretsiz bir masaüstü editör (TeXstudio) kurup şablonu
+doğrudan açarsınız; solda kod, sağda PDF.
 
-| | [1. Taşınabilir (önerilen)](#kurulum-1-taşınabilir-önerilen) | [2. Docker](#kurulum-2-docker) |
-|---|---|---|
-| Ne kurulur | Hiçbir şey: zip'i açıp **Baslat**'a çift tıklarsınız | WSL 2 (Windows), Docker, Toolkit |
-| Sistem | Windows 10/11 (64 bit), macOS (Apple Silicon ya da Intel) | Windows (WSL 2), macOS, Linux |
-| İndirme / süre | Tek zip (~1,5 GB), ilk açılış birkaç dakika | ~30 GB imaj, 15–60 dakika |
-| TeX | Seçme paketlerle TeX Live 2026 (şablon + sık kullanılan tez paketleri) | TeX Live 2026 full |
-| Uygun olduğu yer | Kendi bilgisayarında tez yazan öğrenci | Bölüm/laboratuvar sunucusu, çok kullanıcı, Zotero bağlantısı, korumalı derleme |
+| | [1. Taşınabilir (önerilen)](#kurulum-1-taşınabilir-önerilen) | [2. Docker](#kurulum-2-docker) | [3. Masaüstü editör (en basit)](#kurulum-3-masaüstü-editör-en-basit) |
+|---|---|---|---|
+| Editör | AyakaLeaf (tarayıcıda, Overleaf benzeri) | AyakaLeaf (tarayıcıda, Overleaf benzeri) | TeXstudio (kendi penceresinde) |
+| Ne kurulur | Hiçbir şey: zip'i açıp **Baslat**'a çift tıklarsınız | WSL 2 (Windows), Docker, Toolkit | MiKTeX (Windows) ya da MacTeX (macOS) + TeXstudio |
+| Sistem | Windows 10/11 (64 bit), macOS (Apple Silicon ya da Intel) | Windows (WSL 2), macOS, Linux | Windows, macOS, Linux |
+| İndirme / süre | Tek zip (~1,2 GB), ilk açılış birkaç dakika | ~30 GB imaj, 15–60 dakika | MiKTeX ~150 MB (eksik paketler ilk derlemede iner) ya da MacTeX ~6 GB; 10–30 dakika |
+| Proje geçmişi, ortak düzenleme, şablon galerisi | Var | Var | Yok (geçmiş için Git kullanılabilir) |
+| Uygun olduğu yer | Kendi bilgisayarında tez yazan öğrenci | Bölüm/laboratuvar sunucusu, çok kullanıcı, Zotero bağlantısı, korumalı derleme | Sunucu ya da tarayıcı istemeyen, en hafif ve en hızlı derlemeyi isteyen |
 
 - **Şablonun kendisi (LaTeX, Word karşılaştırması):** <https://github.com/burhanbarakli/sau-fbe-doktora-latex-sablonu>
 - **Şablonun resimli kullanım kılavuzu:** <https://burhanbarakli.github.io/sau-fbe-doktora-latex-sablonu/>
@@ -212,9 +215,49 @@ cd sau-fbe-ayakaleaf
 İlk kurulum, TeX Live imajının boyutu nedeniyle bağlantınıza göre 15–60 dakika sürebilir. Sonraki
 başlatmalar saniyeler içinde olur.
 
+## Kurulum 3: Masaüstü editör (en basit)
+
+AyakaLeaf yok, sunucu yok, tarayıcı yok: bilgisayarınıza bir LaTeX dağıtımı ve [TeXstudio](https://www.texstudio.org/)
+editörünü kurar, şablonu doğrudan açarsınız. Solda kod, sağda PDF; ikisi de ücretsiz ve açık kaynaktır. Derleme en
+hızlı bu yoldadır. Proje geçmişi, ortak düzenleme ve şablon galerisi yoktur.
+
+1. **LaTeX dağıtımını kurun:**
+
+   | Bilgisayar | Kurulum |
+   |---|---|
+   | Windows | [MiKTeX](https://miktex.org/download)'i indirip kurun. Kurulumda *Install missing packages on-the-fly* için **Yes** seçin (eksik paketleri sormadan indirir). |
+   | macOS | [MacTeX](https://tug.org/mactex/mactex-download.html)'i indirip kurun (~6 GB, her şey içinde). |
+   | Linux | `sudo apt install texlive-full` (ya da dağıtımınızın TeX Live paketi) |
+
+   Komut satırını seviyorsanız: Windows'ta `winget install MiKTeX.MiKTeX`, ardından
+   `initexmf --set-config-value [MPM]AutoInstall=1`; macOS'ta `brew install --cask mactex-no-gui`.
+2. **TeXstudio'yu kurun:** <https://www.texstudio.org/> (Windows'ta `winget install TeXstudio.TeXstudio`, macOS'ta
+   `brew install --cask texstudio`, Linux'ta `sudo apt install texstudio`). macOS *"açılamıyor"* derse **Sistem
+   Ayarları → Gizlilik ve Güvenlik → Yine de Aç**.
+3. **Şablonu indirin:** [**sau-fbe-doktora-latex-sablonu (ZIP)**](https://github.com/burhanbarakli/sau-fbe-doktora-latex-sablonu/archive/refs/heads/main.zip).
+   Zip'i açın ve içindeki `sablon` klasörünü istediğiniz yere kopyalayıp adını değiştirin (ör. `Belgeler\Tezim`).
+   Windows'ta klasör yolunda Türkçe karakter olmaması önerilir.
+4. **TeXstudio'da `tez.tex`'i açın ve F5'e basın** (*Derle ve Göster*). PDF sağda açılır. `tez.tex`'in ilk iki satırı
+   (`% !TeX program = lualatex`, `% !BIB program = biber`) TeXstudio'ya derleyiciyi söyler; hiçbir ayar yapmanız
+   gerekmez, bu satırları silmeyin. İlk derleme birkaç dakika sürebilir: MiKTeX eksik paketleri indirir, yazı
+   tipi önbelleği oluşur. İçindekiler ya da şekil listesi boş görünürse **F5**'e bir kez daha basın.
+
+PDF'te bir yere **Ctrl+tıklayınca** (macOS'ta **Cmd+tıklama**) TeXstudio koddaki ilgili satıra gider. Tez bilgilerini
+`tez.tex`'in başına, bölümleri `bolumler/` altına yazarsınız; bütün kurallar ve örnekler şablonun
+[kullanım kılavuzundadır](https://burhanbarakli.github.io/sau-fbe-doktora-latex-sablonu/).
+
+**Kaynakça için .bib (Zotero/Mendeley) kullanırsanız:** `tez.tex`'teki `\input{bib-ayar}` satırını açtıktan sonra
+kaynak ekleyince bir kez **F8** (*Araçlar → Kaynakça*, Biber'i çalıştırır) sonra **F5**'e basın. Atıflar `[?]`
+görünüyorsa aynısını yapın.
+
+**Başka editörler:** VS Code + [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop)
+eklentisi şablondaki `latexmkrc`'yi okuyup kaydettikçe derler (Windows'ta MiKTeX'in `latexmk`'si için Perl gerekir:
+`winget install StrawberryPerl.StrawberryPerl`). MiKTeX ve MacTeX ile gelen TeXworks da `tez.tex`'in ilk satırını
+okuyup LuaLaTeX ile derler.
+
 ## Kullanım
 
-Bu bölüm iki kurulum yolu için de geçerlidir.
+Bu bölüm AyakaLeaf yolları (Kurulum 1 ve 2) için geçerlidir; Kurulum 3'te tezi TeXstudio'da yazarsınız.
 
 1. <http://localhost:8080> → yönetici e-postanız ve şifrenizle giriş yapın (varsayılan: `tez@sau.local` /
    `sakarya2026`; değiştirmek için **Hesap → Hesap Ayarları → Şifre Değiştir**).
@@ -376,6 +419,16 @@ alabilirsiniz.
 | **Yeni Dosya** penceresinde "Zotero'dan" yok | Önce **Hesap Ayarları → Zotero'ya bağlan**. Ayarlarda *Referans yöneticileri* bölümü hiç yoksa bağlantı açılmamıştır: [Zotero / Mendeley bağlantısını açmak](#zotero--mendeley-bağlantısını-açmak-yönetici-bir-kez). |
 | Atıf yerine anahtar ya da soru işareti çıkıyor, kaynakça boş | `\addbibresource{...}`'taki ad `.bib` dosyasının adıyla aynı mı? Anahtar `.bib`'de var mı? Zotero dosyasını açıp **Yenile**'ye basın, sonra yeniden derleyin. |
 
+**Masaüstü editör (Kurulum 3):**
+
+| Belirti | Çözüm |
+|---|---|
+| `fontspec ... requires either XeTeX or LuaTeX` | pdfLaTeX ile derlenmiş. `tez.tex`'in ilk satırı `% !TeX program = lualatex` olmalı; silindiyse geri yazın ya da TeXstudio'da **Seçenekler → TeXstudio'yu Yapılandır → Derleme → Varsayılan Derleyici: LuaLaTeX**. |
+| TeXstudio "lualatex bulunamadı" diyor | MiKTeX/MacTeX kurulduktan sonra TeXstudio'yu kapatıp açın (gerekirse bilgisayarı yeniden başlatın). |
+| Her derlemede "paket kurulsun mu" penceresi çıkıyor | **MiKTeX Console → Settings → Always install missing packages on-the-fly**. |
+| Biber hata veriyor (`data file version` / `biblatex` uyuşmazlığı) | **MiKTeX Console → Updates → Check for updates → Update now**; Biber ile biblatex sürümleri birlikte güncellenmeli. |
+| İlk derleme çok uzun sürüyor | Beklenen durum: paketler iniyor ve yazı tipi önbelleği oluşuyor. Sonraki derlemeler birkaç saniyedir. |
+
 Ayrıntılı kurulum sorunları: AyakaLeaf'in [Windows](https://ayakaleaf-pro.ayaka.space/on-premises/installation/using-docker-compose/windows/troubleshooting)
 ve [macOS](https://ayakaleaf-pro.ayaka.space/on-premises/installation/using-docker-compose/macos/troubleshooting) sorun giderme sayfaları.
 
@@ -412,6 +465,24 @@ Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'deki "Kurulum 2
 4. Depoyu ev klasörüme (Windows'ta Ubuntu'nun ev klasörüne, /mnt/c altına değil) klonla ve `./kur.sh`'ı çalıştır. Yönetici e-postası ve şifresi sorulunca bana sor: Enter'a basarsam varsayılan hesap (tez@sau.local / sakarya2026) kullanılır; kendi şifremi kullanacaksam sohbete yazdırma, betiğin istemine benim girmemi iste.
 5. İmajlar inerken ilerlemeyi takip et; hata olursa README'deki sorun giderme tablosuna ve `bin/docker-compose logs` çıktısına göre düzelt.
 6. Bitince http://localhost:8080/templates/thesis adresinde şablonun, proje listesinde de hazır "Tezim" projesinin durduğunu doğrula ve bana günlük kullanım komutlarını (bin/start, bin/stop) özetle.
+```
+
+### Kurulum 3: Masaüstü editör
+
+```text
+Bilgisayarıma SAÜ FBE LaTeX tez şablonunu TeXstudio masaüstü editörüyle (Kurulum 3) kurmamı istiyorum.
+Depo: https://github.com/burhanbarakli/sau-fbe-ayakaleaf (README'deki "Kurulum 3: Masaüstü editör" bölümünü oku ve ona göre ilerle).
+
+1. İşletim sistemimi belirle. `lualatex --version` ile bir TeX dağıtımı kurulu mu, TeXstudio kurulu mu bak.
+2. Eksikleri kur; her kurulum komutunu çalıştırmadan önce bana göster ve onay al:
+   - Windows: `winget install MiKTeX.MiKTeX`, ardından `initexmf --set-config-value [MPM]AutoInstall=1` (eksik paketleri sormadan kursun); `winget install TeXstudio.TeXstudio`.
+   - macOS: `brew install --cask mactex-no-gui` ve `brew install --cask texstudio` (Homebrew yoksa önce bana sor).
+   - Linux: `sudo apt install texlive-full texstudio` (komutu benim çalıştırmam için göster).
+   - Kurulumdan sonra PATH bu oturumda güncellenmediyse programları tam yoluyla çalıştır.
+3. Tezimi nereye koyacağımı sor (önerin: Belgeler/Tezim; Windows'ta yolda Türkçe karakter olmasın). Şablonu https://github.com/burhanbarakli/sau-fbe-doktora-latex-sablonu/archive/refs/heads/main.zip adresinden indir, aç ve yalnızca içindeki `sablon` klasörünü o yere kopyala. Hedef klasör doluysa üzerine yazma, önce bana sor.
+4. O klasörde `lualatex -interaction=nonstopmode tez.tex` komutunu üç kez çalıştır ve `tez.log`'da "Output written on tez.pdf" satırını gör. Hata olursa log'u oku, eksik paketi kur ve tekrarla. `sauthesis.cls`, `sauwordline.lua` dosyalarını ve `tez.tex`'in ilk iki satırını (`% !TeX program = lualatex`, `% !BIB program = biber`) değiştirme.
+5. `tez.tex`'i TeXstudio'da aç (Windows: `start "" "C:\Program Files\texstudio\texstudio.exe" "<yol>\tez.tex"`; orada değilse texstudio.exe'yi bul, macOS: `open -a TeXstudio <yol>/tez.tex`) ve bana F5 ile derleyip sağda PDF'i görmemi söyle.
+6. Bitince tezin nerede durduğunu, F5 (derle), F8 (.bib kullanırsam kaynakça) kısayollarını ve kuralların şablon kılavuzunda (https://burhanbarakli.github.io/sau-fbe-doktora-latex-sablonu/) olduğunu özetle.
 ```
 
 ## Dosyalar
