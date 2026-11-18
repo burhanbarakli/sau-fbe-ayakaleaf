@@ -231,6 +231,8 @@ hızlı bu yoldadır. Proje geçmişi, ortak düzenleme ve şablon galerisi yokt
 
    Komut satırını seviyorsanız: Windows'ta `winget install MiKTeX.MiKTeX`, ardından
    `initexmf --set-config-value [MPM]AutoInstall=1`; macOS'ta `brew install --cask mactex-no-gui`.
+   Windows'ta kurulumdan sonra bir kez **MiKTeX Console → Updates → Check for updates → Update now** yapın
+   (yapmazsanız derleme çıktısında *"you have not checked for MiKTeX updates"* uyarısı görünür).
 2. **TeXstudio'yu kurun:** <https://www.texstudio.org/> (Windows'ta `winget install TeXstudio.TeXstudio`, macOS'ta
    `brew install --cask texstudio`, Linux'ta `sudo apt install texstudio`). macOS *"açılamıyor"* derse **Sistem
    Ayarları → Gizlilik ve Güvenlik → Yine de Aç**.
@@ -240,15 +242,19 @@ hızlı bu yoldadır. Proje geçmişi, ortak düzenleme ve şablon galerisi yokt
 4. **TeXstudio'da `tez.tex`'i açın ve F5'e basın** (*Derle ve Göster*). PDF sağda açılır. `tez.tex`'in ilk iki satırı
    (`% !TeX program = lualatex`, `% !BIB program = biber`) TeXstudio'ya derleyiciyi söyler; hiçbir ayar yapmanız
    gerekmez, bu satırları silmeyin. İlk derleme birkaç dakika sürebilir: MiKTeX eksik paketleri indirir, yazı
-   tipi önbelleği oluşur. İçindekiler ya da şekil listesi boş görünürse **F5**'e bir kez daha basın.
+   tipi önbelleği oluşur. TeXstudio gerekiyorsa kendiliğinden ikinci kez derler; içindekiler yine boş görünürse
+   **F5**'e bir kez daha basın.
 
 PDF'te bir yere **Ctrl+tıklayınca** (macOS'ta **Cmd+tıklama**) TeXstudio koddaki ilgili satıra gider. Tez bilgilerini
 `tez.tex`'in başına, bölümleri `bolumler/` altına yazarsınız; bütün kurallar ve örnekler şablonun
 [kullanım kılavuzundadır](https://burhanbarakli.github.io/sau-fbe-doktora-latex-sablonu/).
 
-**Kaynakça için .bib (Zotero/Mendeley) kullanırsanız:** `tez.tex`'teki `\input{bib-ayar}` satırını açtıktan sonra
-kaynak ekleyince bir kez **F8** (*Araçlar → Kaynakça*, Biber'i çalıştırır) sonra **F5**'e basın. Atıflar `[?]`
-görünüyorsa aynısını yapın.
+**Kaynakça için .bib (Zotero/Mendeley) kullanırsanız** (`tez.tex`'teki `\input{bib-ayar}` ve `\addbibresource`
+satırlarını açıp `bolumler/kaynaklar.tex`'i `bib-ayar.tex`'in başında yazdığı gibi değiştirdikten sonra): **F5**
+Biber'i gerektiğinde kendisi çalıştırır. İlk seferde TeXstudio *"... bibliography komutunu txs:///biber ile
+değiştirmek istiyor"* diye sorar: **Evet**'e basın. TeXstudio bu onayı hatırlamak için `tez.tex`'in en üstüne
+`% !TeX document-id = {...}` satırını ekler; normaldir. Atıflar yine `[?]` görünürse **F8** (*Araçlar →
+Kaynakça*) sonra **F5**.
 
 **Başka editörler:** VS Code + [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop)
 eklentisi şablondaki `latexmkrc`'yi okuyup kaydettikçe derler (Windows'ta MiKTeX'in `latexmk`'si için Perl gerekir:
@@ -428,6 +434,8 @@ alabilirsiniz.
 | Her derlemede "paket kurulsun mu" penceresi çıkıyor | **MiKTeX Console → Settings → Always install missing packages on-the-fly**. |
 | Biber hata veriyor (`data file version` / `biblatex` uyuşmazlığı) | **MiKTeX Console → Updates → Check for updates → Update now**; Biber ile biblatex sürümleri birlikte güncellenmeli. |
 | İlk derleme çok uzun sürüyor | Beklenen durum: paketler iniyor ve yazı tipi önbelleği oluşuyor. Sonraki derlemeler birkaç saniyedir. |
+| İletilerde `major issue: So far, you have not checked for MiKTeX updates` | Zararsız uyarı; **MiKTeX Console → Updates → Check for updates → Update now** ile kalkar. |
+| Dosyayı TeXstudio açıkken başka programla değiştirince TeXstudio donuyor | TeXstudio'yu kapatıp yeniden açın; dosyayı yeniden yükler. |
 
 Ayrıntılı kurulum sorunları: AyakaLeaf'in [Windows](https://ayakaleaf-pro.ayaka.space/on-premises/installation/using-docker-compose/windows/troubleshooting)
 ve [macOS](https://ayakaleaf-pro.ayaka.space/on-premises/installation/using-docker-compose/macos/troubleshooting) sorun giderme sayfaları.
