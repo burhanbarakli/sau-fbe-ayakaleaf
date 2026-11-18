@@ -1,6 +1,6 @@
 # SAÜ FBE Tez Şablonu + AyakaLeaf Pro
 
-[![AyakaLeaf editöründe SAÜ FBE tez şablonu: solda tez.tex, sağda LuaLaTeX ile derlenmiş 79 sayfalık PDF](docs/img/editor.png)](https://burhanbarakli.github.io/sau-fbe-ayakaleaf/)
+[![AyakaLeaf editöründe SAÜ FBE tez şablonu: solda tez.tex, sağda LuaLaTeX ile derlenmiş PDF](docs/img/editor.png)](https://burhanbarakli.github.io/sau-fbe-ayakaleaf/)
 
 <p align="center"><sub>Şablondan açılan proje: solda <code>tez.tex</code>, sağda LuaLaTeX ile derlenmiş PDF.
 <a href="https://burhanbarakli.github.io/sau-fbe-ayakaleaf/">Resimli kurulum ve kullanım kılavuzu</a></sub></p>

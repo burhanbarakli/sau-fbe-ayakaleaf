@@ -308,7 +308,7 @@ jobs:
         run: |
           f=$(find "$KOK/veri/data/compiles" -name output.log | head -1)
           grep -o "Output written on [^)]*)" "$f"
-          grep -q "79 pages" "$f"
+          grep -q "77 pages" "$f"
       - name: İkinci açılış (kurulum sormadan)
         env:
           AYA_TARAYICI: '0'

@@ -18,8 +18,8 @@ Bu depo, AyakaLeaf Pro'yu (Overleaf CE tabanlı, kendi sunucunda çalışan LaTe
 - **Taşınabilir paket (Kurulum 1, önerilen):** `tasinabilir/` + `.github/workflows/tasinabilir.yml`. İş akışı
   `AYA_IMAJ` imajından `/overleaf`'i çıkarır, `yamala.mjs` ile Windows/macOS yamalarını uygulayıp `ayar/settings.js`'i
   üretir; Node, MongoDB, Garnet (Redis yerine), .NET ve taşınabilir TeX Live (`tex-paketleri.txt`) ekleyip zip'ler,
-  Windows ve macOS'ta `Baslat`'ı çalıştırıp 79 sayfayı doğrular; `yayinla` girdisiyle Releases'e koyar.
-  `baslat.mjs` Docker'daki runit/nginx/init betiklerinin karşılığıdır; ilk açılışta yöneticiyi sorar ve
+  Windows ve macOS'ta `Baslat`'ı çalıştırıp şablonun sayfa sayısını (77) doğrular; `yayinla` girdisiyle Releases'e koyar.
+  `baslat.mjs` Docker'daki runit/nginx/init betiklerinin karşılığıdır; ilk açılışta varsayılan yöneticiyi oluşturur ve
   `sablon-yukle.mjs` (sablonu-yayinla.py'nin Node karşılığı) ile şablonu yükler. Veriler paketin yanındaki `veri/`'de.
   AyakaLeaf sürümü yükseltilince `yamala.mjs` "YAMA BULUNAMADI" derse yamayı yeni koda göre güncelle.
 - Belgeler: README.md ve `docs/index.html` (GitHub Pages). AyakaLeaf belgeleri: https://ayakaleaf-pro.ayaka.space/llms.txt
